@@ -4,7 +4,8 @@ CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
 CURRENT_SNAP=vault.snap
 STORAGE_FOLDER="./vault/"
-VAULT_ADDR="http://127.0.0.1:8200"
+#VAULT_ADDR="http://127.0.0.1:8200"
+ADDRESS="http://127.0.0.1:8200"
 
 
 function start_vault {
@@ -22,30 +23,6 @@ function start_vault {
 
   vault server --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
 
-  setup_vault
-}
-
-
-function stop_vault {
-
-  printf "\n%s" \
-    "Stopping vault server" \
-    "Removing storage folder: $STORAGE_FOLDER"\
-    "Unsetting VAULT_TOKEN, UNSEAL_KEY, VAULT_ADDR environment variables"\
-    ""
-  unset VAULT_TOKEN
-  unset UNSEAL_KEY
-  unset VAULT_ADDR
-
-  kill $(ps aux | grep '[v]ault server' | awk '{print $2}')
-  rm -rf $STORAGE_FOLDER
-  rm $VAULT_LOG
-
-  #echo "end of stop"
-}
-
-
-function setup_vault {
 
   printf "\n%s" \
     "[vault] initializing and capturing the unseal key and root token" \
@@ -53,7 +30,7 @@ function setup_vault {
     ""
   sleep 2 # Added for human readability
 
-  INIT_RESPONSE=$(vault operator init -format=json -key-shares 1 -key-threshold 1)
+  INIT_RESPONSE=$(vault operator init -address="$ADDRESS" -format=json -key-shares 1 -key-threshold 1)
 
   UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
   VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
@@ -74,8 +51,30 @@ function setup_vault {
 
   sleep 2 # Added for human readability
 
-  vault operator unseal "$UNSEAL_KEY"
-  vault login "$VAULT_TOKEN"
+  vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
+  vault login -address="$ADDRESS" "$VAULT_TOKEN"
+}
+
+
+function stop_vault {
+
+  printf "\n%s" \
+    "Stopping vault server" \
+    "Deleting storage folder: $STORAGE_FOLDER"\
+    "Deleting unseal_key-vault and root_token-vault"\
+    "Unsetting VAULT_TOKEN, UNSEAL_KEY, VAULT_ADDR, VAULT_LOG environment variables"\
+    ""
+
+  kill $(ps aux | grep '[v]ault server' | awk '{print $2}')
+  rm -rf $STORAGE_FOLDER
+  rm unseal_key-vault
+  rm root_token-vault
+  rm $VAULT_LOG
+
+  unset VAULT_TOKEN
+  unset UNSEAL_KEY
+  unset VAULT_ADDR
+  unset VAULT_LOG
 }
 
 
@@ -115,7 +114,6 @@ function restore_snapshot {
 
   vault operator unseal "$UNSEAL_KEY"
   vault login "$VAULT_TOKEN"
-
 }
 
 
@@ -158,15 +156,11 @@ function get_data {
 
 case "$1" in
   start)
-    echo "start selected"
     start_vault
     ;;
   stop)
     stop_vault
     ;;
-  #setup)
-    #setup_vault
-    #;;
   backup)
     backup_vault
     ;;
@@ -182,11 +176,11 @@ case "$1" in
   getdata)
     get_data
     ;;
-  ?)
+  *)
     printf "\n%s" \
       "This script creates a single Vault instance using raft storage." \
       "" \
-      "Usage: $0 [start|stop|setup|backup|save|restore|putdata|getdata]" \
+      "Usage: $0 [start|stop|backup|save|restore|putdata|getdata]" \
       ""
     ;;
 esac
