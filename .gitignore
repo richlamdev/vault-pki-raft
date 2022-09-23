@@ -1,0 +1,16 @@
+.DS_Store
+*.DS_Store
+
+*.old
+*.json
+*.csr
+*.crt
+*.key
+*.pem
+*.log
+*.swp
+*.snapshot
+root*
+unseal*
+recovery*
+request*
