@@ -80,40 +80,60 @@ function stop_vault {
 
 function save_snapshot {
 
+  if [ -z "$1" ]
+    then
+      printf "\n%s" \
+        "Please provide filename for snapshot to save."\
+        "Eg ./raft.sh save mysnap.snap"\
+        ""\
+        ""
+      exit 1
+  fi
+
   printf "\n%s" \
-    "Saving snapshot: $CURRENT_SNAP" \
+    "Saving snapshot: $1" \
     ""\
     ""
 
-  vault operator raft snapshot save $CURRENT_SNAP
+  vault operator raft snapshot save -address="$ADDRESS"  "$1"
 }
 
 
 function restore_snapshot {
 
+  if [ -z "$1" ]
+    then
+      printf "\n%s" \
+        "Please provide filename of snapshot to restore."\
+        "Eg ./raft.sh restore mysnap.snap"\
+        ""\
+        ""
+      exit 1
+  fi
+
   printf "\n%s" \
-    "Restoring snapshot: $CURRENT_SNAP" \
+    "Restoring snapshot: $1" \
     ""\
     ""
 
-  vault operator raft snapshot restore -force $CURRENT_SNAP
+  vault operator raft snapshot restore -address="$ADDRESS" -force $1
 
 
-  printf "\n%s" \
-    "Setting UNSEAL_KEY to previous token: unseal_key-vault.old" \
-    "Setting VAULT_TOKEN to previous token: root_token-vault.old" \
-    ""\
-    ""
-  export UNSEAL_KEY=$(cat unseal_key-vault.old)
-  export VAULT_TOKEN=$(cat root_token-vault.old)
-
-  printf "\n%s" \
-    "Unsealing and logging in" \
-    ""\
-    ""
-
-  vault operator unseal "$UNSEAL_KEY"
-  vault login "$VAULT_TOKEN"
+#  printf "\n%s" \
+#    "Setting UNSEAL_KEY to previous token: unseal_key-vault.old" \
+#    "Setting VAULT_TOKEN to previous token: root_token-vault.old" \
+#    ""\
+#    ""
+#  export UNSEAL_KEY=$(cat unseal_key-vault.old)
+#  export VAULT_TOKEN=$(cat root_token-vault.old)
+#
+#  printf "\n%s" \
+#    "Unsealing and logging in" \
+#    ""\
+#    ""
+#
+#  vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
+#  vault login -address="$ADDRESS" "$VAULT_TOKEN"
 }
 
 
@@ -139,8 +159,8 @@ function put_data {
     ""\
     ""
 
-  vault secrets enable -path=kv kv-v2
-  vault kv put /kv/apikey webapp=AAABBB238472320238CCC
+  vault secrets enable -address="$ADDRESS" -path=kv kv-v2
+  vault kv put -address="$ADDRESS" /kv/apikey webapp=AAABBB238472320238CCC
 }
 
 
@@ -151,7 +171,7 @@ function get_data {
     ""\
     ""
 
-  vault kv get /kv/apikey
+  vault kv get -address="$ADDRESS" /kv/apikey
 }
 
 case "$1" in
@@ -165,10 +185,12 @@ case "$1" in
     backup_vault
     ;;
   save)
-    save_snapshot
+    shift ;
+    save_snapshot "$@"
     ;;
   restore)
-    restore_snapshot
+    shift ;
+    restore_snapshot "$@"
     ;;
   putdata)
     put_data
