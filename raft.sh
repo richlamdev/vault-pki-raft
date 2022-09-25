@@ -7,6 +7,7 @@ STORAGE_FOLDER="./vault/"
 ADDRESS="http://127.0.0.1:8200"
 VAULT_ADDR="http://127.0.0.1:8200"
 
+
 function start_vault {
 
   printf "\n%s" \
@@ -78,22 +79,18 @@ function stop_vault {
 
 function save_snapshot {
 
-  if [ -z "$1" ]
-    then
-      printf "\n%s" \
-        "Please provide filename for snapshot to save."\
-        "Eg ./raft.sh save mysnap.snap"\
-        ""\
-        ""
-      exit 1
-  fi
+  RAND_SUFFIX=$(openssl rand -hex 2)
 
   printf "\n%s" \
-    "Saving snapshot: $1" \
+    "Saving snapshot: snapshot_$RAND_SUFFIX" \
+    "Backing up current unseal key: unseal_key_$RAND_SUFFIX"\
+    "Backing up current root token: root_token_$RAND_SUFFIX"\
     ""\
     ""
 
-  vault operator raft snapshot save -address="$ADDRESS"  "$1"
+  vault operator raft snapshot save -address="$ADDRESS" "snapshot_$RAND_SUFFIX"
+  cp unseal_key unseal_key_$RAND_SUFFIX
+  cp root_token root_token_$RAND_SUFFIX
 }
 
 
@@ -102,10 +99,10 @@ function restore_snapshot {
   if [ $# -ne 3 ]
     then
       printf "\n%s" \
-        "Please provide snapshot filename to restore, and matching unseal key, and root token file."\
-        "./raft.sh restore <snapshot_filename> <unseal_key_file> <root_token_file> "\
+        "Please provide snapshot, matching unseal key, and root token filenames."\
+        "./raft.sh restore <snapshot_file> <unseal_key_file> <root_token_file>"\
         ""\
-        "./raft.sh restore mysnap.snapshot unseal_key root_token"\
+        "./raft.sh restore snapshot_XXXX unseal_key_XXXX root_token_XXXX"\
         ""
       exit 1
   fi
@@ -116,6 +113,10 @@ function restore_snapshot {
     ""
 
   vault operator raft snapshot restore -address="$ADDRESS" -force $1
+
+  echo
+  echo break break
+  echo
 
   export UNSEAL_KEY=$(cat $2)
   export VAULT_TOKEN=$(cat $3)
@@ -133,19 +134,6 @@ function restore_snapshot {
 
   vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
   vault login -address="$ADDRESS" "$VAULT_TOKEN"
-}
-
-
-function backup_key_token {
-
-  printf "\n%s" \
-    "Backing up current unseal key: unseal_key.old"\
-    "Backing up current root token: root_token.old"\
-    ""\
-    ""
-
-  cp unseal_key unseal_key.old
-  cp root_token root_token.old
 }
 
 
@@ -171,6 +159,12 @@ function get_data {
   vault kv get -address="$ADDRESS" /kv/apikey
 }
 
+function get_status {
+
+  vault status -address="$ADDRESS"
+
+}
+
 case "$1" in
   start)
     start_vault
@@ -183,7 +177,7 @@ case "$1" in
     ;;
   save)
     shift ;
-    save_snapshot "$@"
+    save_snapshot
     ;;
   restore)
     shift ;
@@ -195,11 +189,14 @@ case "$1" in
   getdata)
     get_data
     ;;
+  status)
+    get_status
+    ;;
   *)
     printf "\n%s" \
       "This script creates a single Vault instance using raft storage." \
       "" \
-      "Usage: $0 [start|stop|backup|save|restore|putdata|getdata]" \
+      "Usage: $0 [start|stop|save|restore|status|putdata|getdata]" \
       ""
     ;;
 esac

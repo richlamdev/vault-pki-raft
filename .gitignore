@@ -16,3 +16,4 @@ recovery*
 request*
 vault/
 *.snap
+snap*
