@@ -5,7 +5,7 @@ VAULT_LOG=vault.log
 CURRENT_SNAP=vault.snap
 STORAGE_FOLDER="./vault/"
 ADDRESS="http://127.0.0.1:8200"
-VAULT_ADDR="http://127.0.0.1:8200"
+#VAULT_ADDR="http://127.0.0.1:8200"
 
 
 function start_vault {
@@ -82,15 +82,15 @@ function save_snapshot {
   RAND_SUFFIX=$(openssl rand -hex 2)
 
   printf "\n%s" \
-    "Saving snapshot: snapshot_$RAND_SUFFIX" \
-    "Backing up current unseal key: unseal_key_$RAND_SUFFIX"\
-    "Backing up current root token: root_token_$RAND_SUFFIX"\
+    "Saving snapshot: snapshot$RAND_SUFFIX" \
+    "Backing up current unseal key: unseal_key$RAND_SUFFIX"\
+    "Backing up current root token: root_token$RAND_SUFFIX"\
     ""\
     ""
 
-  vault operator raft snapshot save -address="$ADDRESS" "snapshot_$RAND_SUFFIX"
-  cp unseal_key unseal_key_$RAND_SUFFIX
-  cp root_token root_token_$RAND_SUFFIX
+  vault operator raft snapshot save -address="$ADDRESS" "snapshot$RAND_SUFFIX"
+  cp unseal_key unseal_key$RAND_SUFFIX
+  cp root_token root_token$RAND_SUFFIX
 }
 
 
@@ -114,15 +114,11 @@ function restore_snapshot {
 
   vault operator raft snapshot restore -address="$ADDRESS" -force $1
 
-  echo
-  echo break break
-  echo
-
-  export UNSEAL_KEY=$(cat $2)
-  export VAULT_TOKEN=$(cat $3)
+  UNSEAL_KEY=$(cat $2)
+  VAULT_TOKEN=$(cat $3)
 
   printf "\n%s" \
-    "Setting UNSEAL_KEY to token: $UNSEAL_KEY" \
+    "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
     "Setting VAULT_TOKEN to token: $VAULT_TOKEN" \
     ""\
     ""
@@ -152,7 +148,7 @@ function put_data {
 function get_data {
 
   printf "\n%s" \
-    "Get mock data"\
+    "Fetching mock data"\
     ""\
     ""
 
@@ -160,6 +156,11 @@ function get_data {
 }
 
 function get_status {
+
+  printf "\n%s" \
+    "vault status"\
+    ""\
+    ""
 
   vault status -address="$ADDRESS"
 
