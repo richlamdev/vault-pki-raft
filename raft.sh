@@ -4,9 +4,8 @@ CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
 CURRENT_SNAP=vault.snap
 STORAGE_FOLDER="./vault/"
-#VAULT_ADDR="http://127.0.0.1:8200"
 ADDRESS="http://127.0.0.1:8200"
-
+VAULT_ADDR="http://127.0.0.1:8200"
 
 function start_vault {
 
@@ -35,9 +34,8 @@ function start_vault {
   UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
   VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
 
-  echo "$UNSEAL_KEY" > unseal_key-vault
-  echo "$VAULT_TOKEN" > root_token-vault
-
+  echo "$UNSEAL_KEY" > unseal_key
+  echo "$VAULT_TOKEN" > root_token
 
   printf "\n%s" \
     "[vault] Unseal key: $UNSEAL_KEY" \
@@ -61,14 +59,14 @@ function stop_vault {
   printf "\n%s" \
     "Stopping vault server" \
     "Deleting storage folder: $STORAGE_FOLDER"\
-    "Deleting unseal_key-vault and root_token-vault"\
+    "Deleting unseal_key and root_token"\
     "Unsetting VAULT_TOKEN, UNSEAL_KEY, VAULT_ADDR, VAULT_LOG environment variables"\
     ""
 
   kill $(ps aux | grep '[v]ault server' | awk '{print $2}')
   rm -rf $STORAGE_FOLDER
-  rm unseal_key-vault
-  rm root_token-vault
+  rm unseal_key
+  rm root_token
   rm $VAULT_LOG
 
   unset VAULT_TOKEN
@@ -101,54 +99,53 @@ function save_snapshot {
 
 function restore_snapshot {
 
-  if [ -z "$1" ]
+  if [ $# -ne 3 ]
     then
       printf "\n%s" \
-        "Please provide filename of snapshot to restore."\
-        "Eg ./raft.sh restore mysnap.snap"\
+        "Please provide snapshot filename to restore, and matching unseal key, and root token file."\
+        "./raft.sh restore <snapshot_filename> <unseal_key_file> <root_token_file> "\
         ""\
+        "./raft.sh restore mysnap.snapshot unseal_key root_token"\
         ""
       exit 1
   fi
 
   printf "\n%s" \
-    "Restoring snapshot: $1" \
+    "Restoring snapshot: $1"\
     ""\
     ""
 
   vault operator raft snapshot restore -address="$ADDRESS" -force $1
 
-
-#  printf "\n%s" \
-#    "Setting UNSEAL_KEY to previous token: unseal_key-vault.old" \
-#    "Setting VAULT_TOKEN to previous token: root_token-vault.old" \
-#    ""\
-#    ""
-#  export UNSEAL_KEY=$(cat unseal_key-vault.old)
-#  export VAULT_TOKEN=$(cat root_token-vault.old)
-#
-#  printf "\n%s" \
-#    "Unsealing and logging in" \
-#    ""\
-#    ""
-#
-#  vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
-#  vault login -address="$ADDRESS" "$VAULT_TOKEN"
-}
-
-
-function backup_vault {
+  export UNSEAL_KEY=$(cat $2)
+  export VAULT_TOKEN=$(cat $3)
 
   printf "\n%s" \
-    "Backing up snapshot: ${CURRENT_SNAP}.old"\
-    "Backing up current unseal key: unseal_key-vault.old"\
-    "Backing up current root token: root_token-vault.old"\
+    "Setting UNSEAL_KEY to token: $UNSEAL_KEY" \
+    "Setting VAULT_TOKEN to token: $VAULT_TOKEN" \
     ""\
     ""
 
-  cp $CURRENT_SNAP "${CURRENT_SNAP}.old"
-  cp unseal_key-vault unseal_key-vault.old
-  cp root_token-vault root_token-vault.old
+  printf "\n%s" \
+    "Unsealing and logging in" \
+    ""\
+    ""
+
+  vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
+  vault login -address="$ADDRESS" "$VAULT_TOKEN"
+}
+
+
+function backup_key_token {
+
+  printf "\n%s" \
+    "Backing up current unseal key: unseal_key.old"\
+    "Backing up current root token: root_token.old"\
+    ""\
+    ""
+
+  cp unseal_key unseal_key.old
+  cp root_token root_token.old
 }
 
 
@@ -182,7 +179,7 @@ case "$1" in
     stop_vault
     ;;
   backup)
-    backup_vault
+    backup_key_token
     ;;
   save)
     shift ;
@@ -214,7 +211,3 @@ esac
 # Take snapshot, this should be done pointing to the active node
 # Will get a 0-byte snapshot if not, as standby nodes will not forward this request (though this might be fixed in later ver)
 #vault operator raft snapshot save raft01.snap
-
-#echo
-#echo
-
