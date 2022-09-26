@@ -23,7 +23,6 @@ function start_vault {
 
   vault server --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
 
-
   printf "\n%s" \
     "[vault] initializing and capturing the unseal key and root token" \
     ""\
@@ -31,6 +30,7 @@ function start_vault {
   sleep 2 # Added for human readability
 
   INIT_RESPONSE=$(vault operator init -address="$ADDRESS" -format=json -key-shares 1 -key-threshold 1)
+  echo
 
   UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
   VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
@@ -52,6 +52,13 @@ function start_vault {
 
   vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
   vault login -address="$ADDRESS" "$VAULT_TOKEN"
+
+  echo
+  xclip -selection clipboard root_token
+  xclip -selection clipboard root_token -o
+  echo "Copied root token to system buffer"
+  echo "Ctrl-Shift-v or middle mouse click to paste"
+  echo
 }
 
 
