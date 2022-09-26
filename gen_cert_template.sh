@@ -10,7 +10,7 @@ ALT_NAME2=""
 TTL="41000h"
 OUTPUT_FILE="${HOST}_csr_signed_output.json"
 
-ROLE="lord_of_the_rings"
+ROLE="lotro"
 
 ADDRESS="http://127.0.0.1:8200"
 
