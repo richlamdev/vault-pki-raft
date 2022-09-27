@@ -3,7 +3,11 @@
 ADDRESS="http://127.0.0.1:8200"
 COMMON_NAME_ROOT="Lord of the Rings Root Authority"
 ISSUER="my_issuer_name"
-ROOT="root"
+ROOT="Root"
+
+COMMON_NAME_INTERMEDIATE="Lord of the Rings Intermediate Authority"
+INTERMEDIATE="Intermediate"
+ROLE="middle_earth_role"
 
 #set -aex
 
@@ -39,17 +43,12 @@ echo
 vault write -address=$ADDRESS -tls-skip-verify pki/config/urls issuing_certificates="https://127.0.0.1:8200/v1/pki/ca" crl_distribution_points="https://127.0.0.1:8200/v1/pki/crl"
 echo
 
+
 printf "\n%s" \
   ""\
   "*** Create Intermediate Certificate ***"\
   ""\
   ""
-
-COMMON_NAME_INTERMEDIATE="Lord of the Rings Intermediate Authority"
-INTERMEDIATE="intermediate"
-INTER_CA="lotro"
-
-
 
 # enable the pki secrets engine at the pki_int path
 vault secrets enable -address=$ADDRESS -tls-skip-verify -path=pki_int pki
@@ -64,13 +63,18 @@ vault write -address=$ADDRESS -tls-skip-verify -format=json pki_int/intermediate
 echo
 
 # Sign the intermediate certificate with the root CA private key, and save the generated certificate as intermediate.cert.pem
-vault write -address=$ADDRESS -tls-skip-verify -format=json pki/root/sign-intermediate csr=@"$COMMON_NAME_INTERMEDIATE"_pki_intermediate.csr format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > "$INTER_CA"_signed_by_root.cert.pem
+vault write -address=$ADDRESS -tls-skip-verify -format=json pki/root/sign-intermediate csr=@"$COMMON_NAME_INTERMEDIATE"_pki_intermediate.csr format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > "$COMMON_NAME_INTERMEDIATE"_signed_by_root.cert.pem
 echo
 
 # Import the signed CSR into Vault
-vault write -address=$ADDRESS -tls-skip-verify pki_int/intermediate/set-signed certificate=@"$INTER_CA"_signed_by_root.cert.pem
+vault write -address=$ADDRESS -tls-skip-verify pki_int/intermediate/set-signed certificate=@"$COMMON_NAME_INTERMEDIATE"_signed_by_root.cert.pem
 echo
 
 # Create a role named example-dot-com which allows subdomains, and specify the default issuer ref ID as the value of issuer_ref
-vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$INTER_CA" allowed_domains="middleearth.test" allow_subdomains=true max_ttl="43800h" 
+vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$ROLE" allowed_domains="middleearth.test" allow_subdomains=true max_ttl="43800h"
 echo
+
+#openssl x509 -in "$COMMON_NAME_ROOT.root_cert.crt" -text -noout
+#echo
+#echo
+#openssl x509 -in "$COMMON_NAME_INTERMEDIATE"_signed_by_root.cert.pem -text -noout

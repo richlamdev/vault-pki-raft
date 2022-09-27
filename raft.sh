@@ -27,7 +27,7 @@ function start_vault {
     "[vault] initializing and capturing the unseal key and root token" \
     ""\
     ""
-  sleep 2 # Added for human readability
+  sleep 1 # Added for human readability
 
   INIT_RESPONSE=$(vault operator init -address="$ADDRESS" -format=json -key-shares 1 -key-threshold 1)
   echo
@@ -48,7 +48,7 @@ function start_vault {
     ""\
     ""
 
-  sleep 2 # Added for human readability
+  #sleep 1 # Added for human readability
 
   vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
   vault login -address="$ADDRESS" "$VAULT_TOKEN"
@@ -57,7 +57,8 @@ function start_vault {
   xclip -selection clipboard root_token
   xclip -selection clipboard root_token -o
   echo "Copied root token to system buffer"
-  echo "Ctrl-Shift-v or middle mouse click to paste"
+  echo "Use ctrl-shift-v to paste"
+  echo "Paste in as Token at http://127.0.0.1:8200 via web browser"
   echo
 }
 
