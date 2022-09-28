@@ -78,10 +78,10 @@ function stop_vault {
   rm root_token
   rm $VAULT_LOG
 
-  unset VAULT_TOKEN
-  unset UNSEAL_KEY
-  unset VAULT_ADDR
-  unset VAULT_LOG
+#  unset VAULT_TOKEN
+#  unset UNSEAL_KEY
+#  unset VAULT_ADDR
+#  unset VAULT_LOG
 }
 
 

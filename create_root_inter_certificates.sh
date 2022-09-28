@@ -8,6 +8,7 @@ ROOT="Root"
 COMMON_NAME_INTERMEDIATE="Lord of the Rings Intermediate Authority"
 INTERMEDIATE="Intermediate"
 ROLE="middle_earth_role"
+ALLOWED_DOMAINS="middleearth.test"
 
 #set -aex
 
@@ -71,7 +72,7 @@ vault write -address=$ADDRESS -tls-skip-verify pki_int/intermediate/set-signed c
 echo
 
 # Create a role named example-dot-com which allows subdomains, and specify the default issuer ref ID as the value of issuer_ref
-vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$ROLE" allowed_domains="middleearth.test" allow_subdomains=true max_ttl="43800h"
+vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$ROLE" allowed_domains="$ALLOWED_DOMAINS" allow_subdomains=true max_ttl="43800h"
 echo
 
 #openssl x509 -in "$COMMON_NAME_ROOT.root_cert.crt" -text -noout
