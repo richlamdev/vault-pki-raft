@@ -89,16 +89,18 @@ function save_snapshot {
 
   RAND_SUFFIX=$(openssl rand -hex 2)
 
+  mkdir $RAND_SUFFIX
+
   printf "\n%s" \
-    "Saving snapshot: snapshot$RAND_SUFFIX" \
-    "Backing up current unseal key: unseal_key$RAND_SUFFIX"\
-    "Backing up current root token: root_token$RAND_SUFFIX"\
+    "Saving snapshot to: $RAND_SUFFIX/snapshot$RAND_SUFFIX" \
+    "Backing up current unseal key: $RAND_SUFFIX/unseal_key$RAND_SUFFIX"\
+    "Backing up current root token: $RAND_SUFFIX/root_token$RAND_SUFFIX"\
     ""\
     ""
 
-  vault operator raft snapshot save -address="$ADDRESS" "snapshot$RAND_SUFFIX"
-  cp unseal_key unseal_key$RAND_SUFFIX
-  cp root_token root_token$RAND_SUFFIX
+  vault operator raft snapshot save -address="$ADDRESS" "$RAND_SUFFIX/snapshot$RAND_SUFFIX"
+  cp unseal_key "$RAND_SUFFIX/unseal_key$RAND_SUFFIX"
+  cp root_token "$RAND_SUFFIX/root_token$RAND_SUFFIX"
 }
 
 
