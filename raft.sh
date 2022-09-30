@@ -87,20 +87,20 @@ function stop_vault {
 
 function save_snapshot {
 
-  RAND_SUFFIX=$(openssl rand -hex 2)
+  RANDOM_ID=$(openssl rand -hex 2)
 
-  mkdir $RAND_SUFFIX
+  mkdir $RANDOM_ID
 
   printf "\n%s" \
-    "Saving snapshot to: $RAND_SUFFIX/snapshot$RAND_SUFFIX" \
-    "Backing up current unseal key: $RAND_SUFFIX/unseal_key$RAND_SUFFIX"\
-    "Backing up current root token: $RAND_SUFFIX/root_token$RAND_SUFFIX"\
+    "Saving snapshot to: $RANDOM_ID/snapshot$RANDOM_ID" \
+    "Backing up current unseal key: $RANDOM_ID/unseal_key$RANDOM_ID"\
+    "Backing up current root token: $RANDOM_ID/root_token$RANDOM_ID"\
     ""\
     ""
 
-  vault operator raft snapshot save -address="$ADDRESS" "$RAND_SUFFIX/snapshot$RAND_SUFFIX"
-  cp unseal_key "$RAND_SUFFIX/unseal_key$RAND_SUFFIX"
-  cp root_token "$RAND_SUFFIX/root_token$RAND_SUFFIX"
+  vault operator raft snapshot save -address="$ADDRESS" "$RANDOM_ID/snapshot$RANDOM_ID"
+  cp unseal_key "$RANDOM_ID/unseal_key$RANDOM_ID"
+  cp root_token "$RANDOM_ID/root_token$RANDOM_ID"
 }
 
 
