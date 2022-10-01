@@ -3,7 +3,7 @@
 CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
 CURRENT_SNAP=vault.snap
-STORAGE_FOLDER="./vault/"
+STORAGE_FOLDER="./vault"
 ADDRESS="http://127.0.0.1:8200"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
