@@ -124,6 +124,10 @@ function restore_snapshot {
 
   vault operator raft snapshot restore -address="$ADDRESS" -force $1
 
+  # copy restored unseal key and root token as current unseal key and root token
+  cp $2 unseal_key
+  cp $3 root_token
+
   UNSEAL_KEY=$(cat $2)
   VAULT_TOKEN=$(cat $3)
 
@@ -131,15 +135,22 @@ function restore_snapshot {
     "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
     "Setting VAULT_TOKEN to token: $VAULT_TOKEN" \
     ""\
-    ""
-
-  printf "\n%s" \
     "Unsealing and logging in" \
     ""\
     ""
 
   vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
   vault login -address="$ADDRESS" "$VAULT_TOKEN"
+
+
+  echo
+  xclip -selection clipboard root_token
+  xclip -selection clipboard root_token -o
+  echo "Copied root token to system buffer"
+  echo "Use ctrl-shift-v to paste"
+  echo "Paste in as Token at http://127.0.0.1:8200 via web browser"
+  echo
+
 }
 
 
