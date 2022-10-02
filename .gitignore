@@ -14,7 +14,7 @@ root*
 unseal*
 recovery*
 request*
-vault/
+data/
 root_inter_certs/
 *.snap
 snap*

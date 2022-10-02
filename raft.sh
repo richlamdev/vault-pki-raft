@@ -3,79 +3,20 @@
 CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
 CURRENT_SNAP=vault.snap
-STORAGE_FOLDER="./vault"
+STORAGE_FOLDER="./data"
 ADDRESS="http://127.0.0.1:8200"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 
-function start_vault {
+function stop_vault () {
 
   printf "\n%s" \
-    "Starting vault server" \
-    "Creating storage folder: $STORAGE_FOLDER"\
-    ""\
-    ""
-
-  if [ ! -d "$STORAGE_FOLDER" ]
-  then
-    mkdir $STORAGE_FOLDER
-  fi
-
-  vault server --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
-
-  printf "\n%s" \
-    "[vault] initializing and capturing the unseal key and root token" \
-    ""\
-    ""
-  sleep 1 # Added for human readability
-
-  INIT_RESPONSE=$(vault operator init -address="$ADDRESS" -format=json -key-shares 1 -key-threshold 1)
-  echo
-
-  UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
-  VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
-
-  echo "$UNSEAL_KEY" > unseal_key
-  echo "$VAULT_TOKEN" > root_token
-
-  printf "\n%s" \
-    "[vault] Unseal key: $UNSEAL_KEY" \
-    "[vault] Root token: $VAULT_TOKEN" \
-    ""
-
-  printf "\n%s" \
-    "[vault] unsealing and logging in" \
-    ""\
-    ""
-
-  #sleep 1 # Added for human readability
-
-  vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
-  vault login -address="$ADDRESS" "$VAULT_TOKEN"
-
-  echo
-  xclip -selection clipboard root_token
-  xclip -selection clipboard root_token -o
-  echo "Copied root token to system buffer"
-  echo "Use ctrl-shift-v to paste"
-  echo "Paste in as Token at http://127.0.0.1:8200 via web browser"
-  echo
-}
-
-
-function stop_vault {
-
-#  printf "\n%s" \
-#    "Stopping vault server" \
-#    "Deleting storage folder: $STORAGE_FOLDER"\
-#    "Deleting unseal_key, root_token, and vault.log"\
-#    ""\
-#    ""
+    "Stopping vault"\
 
   VAULT_ID=$(pgrep -u $USER vault)
   if [ -n "${VAULT_ID}" ]; then
       echo
-      echo "Stopping vault server"
+      echo "Stopping vault process"
       kill $VAULT_ID
   fi
 
@@ -98,22 +39,73 @@ function stop_vault {
 }
 
 
+function start_vault {
+
+  stop_vault
+
+  printf "\n%s" \
+    "Starting vault"\
+    "Cleaning up existing vault data created"\
+    "Starting vault server"\
+    "Creating storage folder: $STORAGE_FOLDER"\
+    ""\
+
+  mkdir $STORAGE_FOLDER
+
+  vault server -address=$ADDRESS --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
+
+  printf "\n%s" \
+    "Initializing and capturing the unseal key and root token" \
+    ""
+  sleep 1
+
+  INIT_RESPONSE=$(vault operator init -address="$ADDRESS" -format=json -key-shares 1 -key-threshold 1)
+  echo
+
+  UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
+  VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
+
+  echo "$UNSEAL_KEY" > unseal_key
+  echo "$VAULT_TOKEN" > root_token
+
+  printf "\n%s"\
+    "Unseal key: $UNSEAL_KEY"\
+    "Root token: $VAULT_TOKEN"\
+    ""\
+    "Unsealing and logging in"\
+    ""
+
+  vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
+  vault login -address="$ADDRESS" "$VAULT_TOKEN"
+
+  xclip -selection clipboard root_token
+  printf "\n%s"\
+    "The root token is copied to the system buffer"\
+    "Root token:"\
+    "$VAULT_TOKEN"\
+    ""\
+    "Use ctrl-shift-v to paste"\
+    "Paste in as Token at http://127.0.0.1:8200 via web browser"\
+    ""
+}
+
+
 function save_snapshot {
 
   RANDOM_ID=$(openssl rand -hex 2)
 
-  mkdir $RANDOM_ID
+  mkdir "backup_$RANDOM_ID"
 
   printf "\n%s" \
-    "Saving snapshot to: $RANDOM_ID/snapshot$RANDOM_ID" \
-    "Backing up current unseal key: $RANDOM_ID/unseal_key$RANDOM_ID"\
-    "Backing up current root token: $RANDOM_ID/root_token$RANDOM_ID"\
+    "Saving snapshot to: backup_$RANDOM_ID/snapshot$RANDOM_ID" \
+    "Backing up current unseal key: backup_$RANDOM_ID/unseal_key$RANDOM_ID"\
+    "Backing up current root token: backup_$RANDOM_ID/root_token$RANDOM_ID"\
     ""\
     ""
 
-  vault operator raft snapshot save -address="$ADDRESS" "$RANDOM_ID/snapshot$RANDOM_ID"
-  cp unseal_key "$RANDOM_ID/unseal_key$RANDOM_ID"
-  cp root_token "$RANDOM_ID/root_token$RANDOM_ID"
+  vault operator raft snapshot save -address="$ADDRESS" "backup_$RANDOM_ID/snapshot$RANDOM_ID"
+  cp unseal_key "backup_$RANDOM_ID/unseal_key$RANDOM_ID"
+  cp root_token "backup_$RANDOM_ID/root_token$RANDOM_ID"
 }
 
 
@@ -131,7 +123,7 @@ function restore_snapshot {
   fi
 
   printf "\n%s" \
-    "Restoring snapshot: $1"\
+    "Restoring vault: $1"\
     ""\
     ""
 
@@ -155,14 +147,15 @@ function restore_snapshot {
   vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
   vault login -address="$ADDRESS" "$VAULT_TOKEN"
 
-
-  echo
   xclip -selection clipboard root_token
-  xclip -selection clipboard root_token -o
-  echo "Copied root token to system buffer"
-  echo "Use ctrl-shift-v to paste"
-  echo "Paste in as Token at http://127.0.0.1:8200 via web browser"
-  echo
+  printf "\n%s"\
+    "The root token is copied to the system buffer"\
+    "Root token:"\
+    "$VAULT_TOKEN"\
+    ""\
+    "Use ctrl-shift-v to paste"\
+    "Paste in as Token at http://127.0.0.1:8200 via web browser"\
+    ""
 }
 
 
