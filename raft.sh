@@ -65,22 +65,36 @@ function start_vault {
 
 function stop_vault {
 
-  printf "\n%s" \
-    "Stopping vault server" \
-    "Deleting storage folder: $STORAGE_FOLDER"\
-    "Deleting unseal_key, root_token, and vault.log"\
-    ""
+#  printf "\n%s" \
+#    "Stopping vault server" \
+#    "Deleting storage folder: $STORAGE_FOLDER"\
+#    "Deleting unseal_key, root_token, and vault.log"\
+#    ""\
+#    ""
 
-  kill $(ps aux | grep '[v]ault server' | awk '{print $2}')
-  rm -rf $STORAGE_FOLDER
-  rm unseal_key
-  rm root_token
-  rm $VAULT_LOG
+  VAULT_ID=$(pgrep -u $USER vault)
+  if [ -n "${VAULT_ID}" ]; then
+      echo
+      echo "Stopping vault server"
+      kill $VAULT_ID
+  fi
 
-#  unset VAULT_TOKEN
-#  unset UNSEAL_KEY
-#  unset VAULT_ADDR
-#  unset VAULT_LOG
+  #kill $(ps aux | grep '[v]ault server' | awk '{print $2}')
+
+  if [ -d "$STORAGE_FOLDER" ]; then
+    echo "Deleting storage folder: $STORAGE_FOLDER"
+    rm -rf $STORAGE_FOLDER
+  fi
+
+  #rm -rf $STORAGE_FOLDER
+
+  if [ -f unseal_key ]; then
+    echo "Deleting unseal_key, root_token, and vault.log"
+    echo
+    rm unseal_key
+    rm root_token
+    rm $VAULT_LOG
+  fi
 }
 
 
@@ -149,7 +163,6 @@ function restore_snapshot {
   echo "Use ctrl-shift-v to paste"
   echo "Paste in as Token at http://127.0.0.1:8200 via web browser"
   echo
-
 }
 
 
@@ -175,6 +188,7 @@ function get_data {
   vault kv get -address="$ADDRESS" /kv/apikey
 }
 
+
 function get_status {
 
   printf "\n%s" \
@@ -183,8 +197,8 @@ function get_status {
     ""
 
   vault status -address="$ADDRESS"
-
 }
+
 
 case "$1" in
   start)

@@ -26,11 +26,12 @@ vault write -address=$ADDRESS -format=json pki_int/issue/$ROLE common_name=${COM
 jq -r '.data.certificate,.data.issuing_ca' ${OUTPUT_DIR}/${OUTPUT_FILE} > ${OUTPUT_DIR}/${HOST}_cert.crt
 jq -r '.data.private_key' $OUTPUT_DIR/${OUTPUT_FILE} > ${OUTPUT_DIR}/${HOST}_cert.key
 
-echo "*** View ${HOST}_cert.key private certificate ***"
-openssl rsa -in ${OUTPUT_DIR}/${HOST}_cert.key -check | head -n20
-
-echo
-echo
-echo
-echo "*** View ${HOST}_cert.crt public certificate ***"
-openssl x509 -in ${OUTPUT_DIR}/${HOST}_cert.crt -text -noout | head -n50
+printf "\n%s" \
+    "*** To view ${HOST}_cert.key private certificate execute the following command:***"\
+    "openssl rsa -in ${OUTPUT_DIR}/${HOST}_cert.key -check"\
+    ""\
+    ""\
+    "*** To view ${HOST}_cert.crt public certificate execute the following command:***"\
+    "openssl x509 -in ${OUTPUT_DIR}/${HOST}_cert.crt -text -noout"\
+    ""\
+    ""
