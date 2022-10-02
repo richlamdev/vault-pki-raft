@@ -68,8 +68,7 @@ function stop_vault {
   printf "\n%s" \
     "Stopping vault server" \
     "Deleting storage folder: $STORAGE_FOLDER"\
-    "Deleting unseal_key and root_token"\
-    "Unsetting VAULT_TOKEN, UNSEAL_KEY, VAULT_ADDR, VAULT_LOG environment variables"\
+    "Deleting unseal_key, root_token, and vault.log"\
     ""
 
   kill $(ps aux | grep '[v]ault server' | awk '{print $2}')
