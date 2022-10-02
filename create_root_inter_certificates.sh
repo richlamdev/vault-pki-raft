@@ -1,14 +1,14 @@
 #!/bin/bash
 
+ADDRESS="http://127.0.0.1:8200"
 ROOT_INTER_FOLDER="./root_inter_certs"
 
-ADDRESS="http://127.0.0.1:8200"
-COMMON_NAME_ROOT="Lord of the Rings Root Authority"
-ISSUER="my_issuer_name"
+COMMON_NAME="Lord of the Rings"
 ROOT="Root"
-
-COMMON_NAME_INTERMEDIATE="Lord of the Rings Intermediate Authority"
 INTERMEDIATE="Intermediate"
+COMMON_NAME_ROOT="${COMMON_NAME} ${ROOT} Authority"
+ISSUER="my_issuer_name"
+COMMON_NAME_INTERMEDIATE="${COMMON_NAME} ${INTERMEDIATE} Authority"
 ROLE="middle_earth_role"
 ALLOWED_DOMAINS="middleearth.test"
 
