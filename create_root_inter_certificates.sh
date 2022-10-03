@@ -81,6 +81,15 @@ echo
 vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$ROLE" allowed_domains="$ALLOWED_DOMAINS" allow_subdomains=true max_ttl="43800h"
 echo
 
+printf "\n%s" \
+    "*** To view root certificate execute the following command:***"\
+    "openssl x509 -in ${ROOT_INTER_FOLDER}/${COMMON_NAME_ROOT}.root_cert.crt -text -noout"\
+    ""\
+    ""\
+    "*** To view intermediate certificate execute the following command:***"\
+    "openssl x509 -in ${ROOT_INTER_FOLDER}/${COMMON_NAME_INTERMEDIATE}_signed_by_root.cert.pem -text -noout"\
+    ""\
+    ""
 #openssl x509 -in "$COMMON_NAME_ROOT.root_cert.crt" -text -noout
 #echo
 #echo

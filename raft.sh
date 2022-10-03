@@ -34,24 +34,6 @@ function stop_vault {
       rm root_token
       rm $VAULT_LOG
   fi
-
-  echo "Checking for existance of root and intermediate certificate folder: root_inter_certs"
-  if [ -d "root_inter_certs" ]; then
-      echo "Removing root and intermediate certificates folder: root_inter_certs"
-      echo
-      rm -rf root_inter_certs
-  fi
-
-  echo "Checking for the existence of any *.middleearth.test folders"
-  CERTS_EXISTS=$(ls *middleearth.test 1> /dev/null 2>&1)
-  CERTS_EXISTS_STATUS=$?
-  if [ $CERTS_EXISTS_STATUS -eq 0 ]; then
-      echo "Removing *.middleearth.test folders"
-      echo
-      rm -rf *.middleearth.test
-  fi
-
-  echo
 }
 
 
@@ -217,17 +199,14 @@ function clean_all {
 
   stop_vault
 
-  printf "\n%s" \
-      "Checking for existance of root and intermediate certificate folder: root_inter_certs"\
-      "Checking for the existence of any *.middleearth.test folders"\
-      ""\
-      ""
-
+  echo "Checking for root and intermediate certificate folder: root_inter_certs"
   if [ -d "root_inter_certs" ]; then
       echo "Removing root and intermediate certificates folder: root_inter_certs"
+      echo
       rm -rf root_inter_certs
   fi
 
+  echo "Checking for any *.middleearth.test folders"
   CERTS_EXISTS=$(ls *middleearth.test 1> /dev/null 2>&1)
   CERTS_EXISTS_STATUS=$?
   if [ $CERTS_EXISTS_STATUS -eq 0 ]; then
@@ -235,6 +214,17 @@ function clean_all {
       echo
       rm -rf *.middleearth.test
   fi
+
+  echo "Checking for any backup folders"
+  BACKUPS_EXISTS=$(ls backup_* 1> /dev/null 2>&1)
+  BACKUPS_EXISTS_STATUS=$?
+  if [ $BACKUPS_EXISTS_STATUS -eq 0 ]; then
+      echo "Removing backup_* folders"
+      echo
+      rm -rf backup_*
+  fi
+
+  echo
 }
 
 
