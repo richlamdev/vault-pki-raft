@@ -1,17 +1,17 @@
 #!/bin/bash
 
-COMMON_NAME="Lord of the Rings"
-ROOT="Root"
-INTERMEDIATE="Intermediate"
-COMMON_NAME_ROOT="${COMMON_NAME} ${ROOT} Authority"
-COMMON_NAME_INTERMEDIATE="${COMMON_NAME} ${INTERMEDIATE} Authority"
-
-ADDRESS="http://127.0.0.1:8200"
-ROOT_INTER_FOLDER="./root_inter_certs"
-
-ISSUER="my_issuer_name"
+CN="Lord of the Rings"
 ROLE="middle_earth_role"
 ALLOWED_DOMAINS="middleearth.test"
+ROOT_INTER_FOLDER="./root_inter_certs"
+
+ROOT="Root"
+INTERMEDIATE="Intermediate"
+CN_ROOT="${CN} ${ROOT} Authority"
+CN_INTERMEDIATE="${CN} ${INTERMEDIATE} Authority"
+CN_ROOT_NO_SPACE=${CN_ROOT// /_}
+CN_INTERMEDIATE_NO_SPACE=${CN_INTERMEDIATE// /_}
+ADDRESS="http://127.0.0.1:8200"
 
 
 mkdir $ROOT_INTER_FOLDER
@@ -37,7 +37,7 @@ vault secrets tune -address=$ADDRESS -tls-skip-verify -max-lease-ttl=87600h pki
 echo
 
 # configure a CA certificate and private key; private key is stored internally in Vault
-vault write -address=$ADDRESS -tls-skip-verify -field=certificate pki/root/generate/internal common_name="$COMMON_NAME_ROOT" issuer_name="$ISSUER-$ROOT" ttl=87600h | tee "$ROOT_INTER_FOLDER/$COMMON_NAME_ROOT.root_cert.crt"
+vault write -address=$ADDRESS -tls-skip-verify -field=certificate pki/root/generate/internal common_name="$CN_ROOT" issuer_name="$ROOT" ttl=87600h | tee "$ROOT_INTER_FOLDER/$CN_ROOT_NO_SPACE.root_cert.crt"
 echo
 
 # list the issuer information for the root CA
@@ -65,16 +65,16 @@ echo
 vault secrets tune -address=$ADDRESS -tls-skip-verify -max-lease-ttl=43800h pki_int
 echo
 
-# Generate an intermediate and save the CSR as $COMMON_NAME_pki_intermediate.csr
-vault write -address=$ADDRESS -tls-skip-verify -format=json pki_int/intermediate/generate/internal common_name="$COMMON_NAME_INTERMEDIATE" issuer_name="$ISSUER-$INTERMEDIATE" | jq -r '.data.csr' > "$ROOT_INTER_FOLDER/$COMMON_NAME_INTERMEDIATE"_pki_intermediate.csr
+# Generate an intermediate and save the CSR as $CN_pki_intermediate.csr
+vault write -address=$ADDRESS -tls-skip-verify -format=json pki_int/intermediate/generate/internal common_name="$CN_INTERMEDIATE" issuer_name="$INTERMEDIATE" | jq -r '.data.csr' > "$ROOT_INTER_FOLDER/$CN_INTERMEDIATE_NO_SPACE"_pki_intermediate.csr
 echo
 
 # Sign the intermediate certificate with the root CA private key, and save the generated certificate as intermediate.cert.pem
-vault write -address=$ADDRESS -tls-skip-verify -format=json pki/root/sign-intermediate csr=@"$ROOT_INTER_FOLDER/$COMMON_NAME_INTERMEDIATE"_pki_intermediate.csr format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > "$ROOT_INTER_FOLDER/$COMMON_NAME_INTERMEDIATE"_signed_by_root.cert.pem
+vault write -address=$ADDRESS -tls-skip-verify -format=json pki/root/sign-intermediate csr=@"$ROOT_INTER_FOLDER/$CN_INTERMEDIATE_NO_SPACE"_pki_intermediate.csr format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > "$ROOT_INTER_FOLDER/$CN_INTERMEDIATE_NO_SPACE"_signed_by_root.cert.pem
 echo
 
 # Import the signed CSR into Vault
-vault write -address=$ADDRESS -tls-skip-verify pki_int/intermediate/set-signed certificate=@"$ROOT_INTER_FOLDER/$COMMON_NAME_INTERMEDIATE"_signed_by_root.cert.pem
+vault write -address=$ADDRESS -tls-skip-verify pki_int/intermediate/set-signed certificate=@"$ROOT_INTER_FOLDER/$CN_INTERMEDIATE_NO_SPACE"_signed_by_root.cert.pem
 echo
 
 # Create a role named emiddle_earth_role which allows subdomains, and specify the default issuer ref ID as the value of issuer_ref
@@ -83,14 +83,10 @@ echo
 
 printf "\n%s" \
     "*** To view root certificate execute the following command:***"\
-    "openssl x509 -in ${ROOT_INTER_FOLDER}/${COMMON_NAME_ROOT}.root_cert.crt -text -noout"\
+    "openssl x509 -in ${ROOT_INTER_FOLDER}/${CN_ROOT_NO_SPACE}.root_cert.crt -text -noout"\
     ""\
     ""\
     "*** To view intermediate certificate execute the following command:***"\
-    "openssl x509 -in ${ROOT_INTER_FOLDER}/${COMMON_NAME_INTERMEDIATE}_signed_by_root.cert.pem -text -noout"\
+    "openssl x509 -in ${ROOT_INTER_FOLDER}/${CN_INTERMEDIATE_NO_SPACE}_signed_by_root.cert.pem -text -noout"\
     ""\
     ""
-#openssl x509 -in "$COMMON_NAME_ROOT.root_cert.crt" -text -noout
-#echo
-#echo
-#openssl x509 -in "$COMMON_NAME_INTERMEDIATE"_signed_by_root.cert.pem -text -noout
