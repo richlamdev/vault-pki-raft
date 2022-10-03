@@ -193,6 +193,20 @@ function get_status {
 }
 
 
+function clean_all {
+
+  stop_vault
+
+  printf "\n%s" \
+    "Removing root and intermediate certificate folder"\
+    "Removing *.middleearth.net folders"\
+    ""\
+    ""
+  rm -rf root_inter_certs
+  rm -rf *.middleearth.net
+}
+
+
 case "$1" in
   start)
     start_vault
@@ -220,11 +234,14 @@ case "$1" in
   status)
     get_status
     ;;
+  cleanup)
+    clean_all
+    ;;
   *)
     printf "\n%s" \
       "This script creates a single Vault instance using raft storage." \
       "" \
-      "Usage: $0 [start|stop|save|restore|status|putdata|getdata]" \
+      "Usage: $0 [start|stop|save|restore|status|cleanup|putdata|getdata]" \
       ""
     ;;
 esac
