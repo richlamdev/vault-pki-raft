@@ -8,7 +8,7 @@ ADDRESS="http://127.0.0.1:8200"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 
-function stop_vault () {
+function stop_vault {
 
   echo "Checking for vault process running."
   VAULT_ID=$(pgrep -u $USER vault)
@@ -58,26 +58,26 @@ function stop_vault () {
 function start_vault {
 
   printf "\n%s"\
-  ""\
-  "Removing any prior data or services before continuing..."\
-  ""\
+      ""\
+      "Removing any prior data or services before continuing..."\
+      ""\
 
   stop_vault
 
   printf "\n%s" \
-    "Starting vault"\
-    "Cleaning up existing vault data created"\
-    "Starting vault server"\
-    "Creating storage folder: $STORAGE_FOLDER"\
-    ""\
+      "Starting vault"\
+      "Cleaning up existing vault data created"\
+      "Starting vault server"\
+      "Creating storage folder: $STORAGE_FOLDER"\
+      ""\
 
   mkdir $STORAGE_FOLDER
 
   vault server -address=$ADDRESS --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
 
   printf "\n%s" \
-    "Initializing and capturing the unseal key and root token" \
-    ""
+      "Initializing and capturing the unseal key and root token" \
+      ""
   sleep 1
 
   INIT_RESPONSE=$(vault operator init -address="$ADDRESS" -format=json -key-shares 1 -key-threshold 1)
