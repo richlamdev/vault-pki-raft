@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# edit the HOST and DOMAIN for the Common Name (CN) you want to appear on the certificate
+# edit or omit the IP address in the Subject Alternative Name (SAN) per your needs.
+# edit the TTL for how long you want the certificate to last. Presently set to
+# 9552hours or 398 days
+# Reference: https://support.apple.com/en-ca/HT211025
 HOST="template"
 DOMAIN="middleearth.test"
 CN=${HOST}.${DOMAIN}

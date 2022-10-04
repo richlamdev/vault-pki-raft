@@ -1,8 +1,12 @@
 #!/bin/bash
 
+# edit the domain to reflect the domain you choose to generate certificates for
+# This is only used for the cleanup function, should you need a quick way
+# to remove all issued certificates stored in folders
+DOMAIN="middleearth.test"
+
 CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
-CURRENT_SNAP=vault.snap
 STORAGE_FOLDER="./data"
 ADDRESS="http://127.0.0.1:8200"
 #VAULT_ADDR="http://127.0.0.1:8200"
@@ -113,29 +117,35 @@ function save_snapshot {
 
 function restore_snapshot {
 
-  if [ $# -ne 3 ]; then
+  if [ $# -ne 1 ]; then
       printf "\n%s" \
-        "Please provide snapshot, matching unseal key, and root token filenames."\
-        "./raft.sh restore <snapshot_file> <unseal_key_file> <root_token_file>"\
-        ""\
-        "./raft.sh restore snapshot_XXXX unseal_key_XXXX root_token_XXXX"\
-        ""
+        "Please provide snapshot folder."\
+        "./raft.sh restore backup_xxxx"\
+        "Eg:"\
+        "./raft.sh restore backup_1a6e"\
       exit 1
   fi
 
+  #retrieve ID of backup folder - last four chars of the folder name
+  ID=${1:7:4}
+
   printf "\n%s" \
-      "Restoring vault: $1"\
+      "Restoring vault from folder: $1"\
       ""\
+      "Restoring snapshot from file backup_$ID/snapshot$ID"\
+      "Using unseal token from file backup_$ID/unseal_key$ID"\
+      "Using root token from file backup_$ID/unseal_key$ID"\
       ""
 
-  vault operator raft snapshot restore -address="$ADDRESS" -force $1
+  #vault operator raft snapshot restore -address="$ADDRESS" -force $1
+  vault operator raft snapshot restore -address="$ADDRESS" -force backup_$ID/snapshot$ID
 
-  # copy restored unseal key and root token as current unseal key and root token
-  cp $2 unseal_key
-  cp $3 root_token
+  # copy backup unseal key and root token as current unseal key and root token (copy to current working directory)
+  cp backup_$ID/unseal_key$ID unseal_key
+  cp backup_$ID/root_token$ID root_token
 
-  UNSEAL_KEY=$(cat $2)
-  VAULT_TOKEN=$(cat $3)
+  UNSEAL_KEY=$(cat backup_$ID/unseal_key$ID)
+  VAULT_TOKEN=$(cat backup_$ID/root_token$ID)
 
   printf "\n%s" \
       "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
@@ -205,12 +215,12 @@ function clean_all {
       rm -rf root_inter_certs
   fi
 
-  echo "Checking for any *.middleearth.test folders"
-  CERTS_EXISTS=$(ls *middleearth.test 1> /dev/null 2>&1)
+  echo "Checking for any *.${DOMAIN} folders"
+  CERTS_EXISTS=$(ls *${DOMAIN} 1> /dev/null 2>&1)
   if [ $? -eq 0 ]; then
-      echo "Removing *.middleearth.test folders"
+      echo "Removing *.${DOMAIN} folders"
       echo
-      rm -rf *.middleearth.test
+      rm -rf *.${DOMAIN}
   fi
 
   echo "Checking for any backup folders"
@@ -236,7 +246,6 @@ case "$1" in
       backup_key_token
       ;;
     save)
-      shift ;
       save_snapshot
       ;;
     restore)
