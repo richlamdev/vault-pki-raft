@@ -37,7 +37,8 @@ vault secrets tune -address=$ADDRESS -tls-skip-verify -max-lease-ttl=87600h pki
 echo
 
 # configure a CA certificate and private key; private key is stored internally in Vault
-vault write -address=$ADDRESS -tls-skip-verify -field=certificate pki/root/generate/internal common_name="$CN_ROOT" issuer_name="$ROOT" ttl=87600h | tee "$ROOT_INTER_FOLDER/$CN_ROOT_NO_SPACE.root_cert.crt"
+#vault write -address=$ADDRESS -tls-skip-verify -field=certificate pki/root/generate/internal common_name="$CN_ROOT" issuer_name="$ROOT" ttl=87600h | tee "$ROOT_INTER_FOLDER/$CN_ROOT_NO_SPACE.root_cert.crt"
+vault write -address=$ADDRESS -tls-skip-verify -field=certificate pki/root/generate/internal common_name="$CN_ROOT" ttl=87600h | tee "$ROOT_INTER_FOLDER/$CN_ROOT_NO_SPACE.root_cert.crt"
 echo
 
 # list the issuer information for the root CA
@@ -66,7 +67,8 @@ vault secrets tune -address=$ADDRESS -tls-skip-verify -max-lease-ttl=43800h pki_
 echo
 
 # Generate an intermediate and save the CSR as $CN_pki_intermediate.csr
-vault write -address=$ADDRESS -tls-skip-verify -format=json pki_int/intermediate/generate/internal common_name="$CN_INTERMEDIATE" issuer_name="$INTERMEDIATE" | jq -r '.data.csr' > "$ROOT_INTER_FOLDER/$CN_INTERMEDIATE_NO_SPACE"_pki_intermediate.csr
+#vault write -address=$ADDRESS -tls-skip-verify -format=json pki_int/intermediate/generate/internal common_name="$CN_INTERMEDIATE" issuer_name="$INTERMEDIATE" | jq -r '.data.csr' > "$ROOT_INTER_FOLDER/$CN_INTERMEDIATE_NO_SPACE"_pki_intermediate.csr
+vault write -address=$ADDRESS -tls-skip-verify -format=json pki_int/intermediate/generate/internal common_name="$CN_INTERMEDIATE" | jq -r '.data.csr' > "$ROOT_INTER_FOLDER/$CN_INTERMEDIATE_NO_SPACE"_pki_intermediate.csr
 echo
 
 # Sign the intermediate certificate with the root CA private key, and save the generated certificate as intermediate.cert.pem

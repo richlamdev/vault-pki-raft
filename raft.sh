@@ -12,8 +12,7 @@ function stop_vault {
 
   echo "Checking for vault process running."
   VAULT_ID=$(pgrep -u $USER vault)
-  VAULT_ID_STATUS=$?
-  if [ $VAULT_ID_STATUS -eq 0 ]; then
+  if [ $? -eq 0 ]; then
       echo "Stopping vault process"
       echo
       kill $VAULT_ID
@@ -208,8 +207,7 @@ function clean_all {
 
   echo "Checking for any *.middleearth.test folders"
   CERTS_EXISTS=$(ls *middleearth.test 1> /dev/null 2>&1)
-  CERTS_EXISTS_STATUS=$?
-  if [ $CERTS_EXISTS_STATUS -eq 0 ]; then
+  if [ $? -eq 0 ]; then
       echo "Removing *.middleearth.test folders"
       echo
       rm -rf *.middleearth.test
@@ -217,8 +215,7 @@ function clean_all {
 
   echo "Checking for any backup folders"
   BACKUPS_EXISTS=$(ls backup_* 1> /dev/null 2>&1)
-  BACKUPS_EXISTS_STATUS=$?
-  if [ $BACKUPS_EXISTS_STATUS -eq 0 ]; then
+  if [ $? -eq 0 ]; then
       echo "Removing backup_* folders"
       echo
       rm -rf backup_*
