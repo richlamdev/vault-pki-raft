@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CN="Lord of the Rings"
-ROLE="middle_earth_role"
+VAULT_ROLE="middle_earth_role"
 ALLOWED_DOMAINS="middleearth.test"
 ROOT_INTER_FOLDER="./root_inter_certs"
 
@@ -80,7 +80,7 @@ vault write -address=$ADDRESS -tls-skip-verify pki_int/intermediate/set-signed c
 echo
 
 # Create a role named emiddle_earth_role which allows subdomains, and specify the default issuer ref ID as the value of issuer_ref
-vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$ROLE" allowed_domains="$ALLOWED_DOMAINS" allow_subdomains=true max_ttl="43800h"
+vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$VAULT_ROLE" allowed_domains="$ALLOWED_DOMAINS" allow_subdomains=true max_ttl="43800h"
 echo
 
 printf "\n%s" \
@@ -92,3 +92,5 @@ printf "\n%s" \
     "openssl x509 -in ${ROOT_INTER_FOLDER}/${CN_INTERMEDIATE_NO_SPACE}_signed_by_root.cert.pem -text -noout"\
     ""\
     ""
+
+touch ${ROOT_INTER_FOLDER}/created_$(date +"%Y-%m-%d--%H-%M-%S")
