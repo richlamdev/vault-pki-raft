@@ -1,14 +1,19 @@
 #!/bin/bash
 
-CN="Lord of the Rings"
-VAULT_ROLE="middle_earth_role"
-ALLOWED_DOMAINS="middleearth.test"
-ROOT_INTER_FOLDER="./root_inter_certs"
+# edit ISSUER_NAME_CN for the Certificate Authority (CA) want to appear on certificates.
+# edit DOMAIN for the allowed domains the CA is allowed to certify
+# edit VAULT_ROLE if you desire.  This role name *must* match the role name in issue_cert_template.sh
+# if the VAULT_ROLE value does not match, certificates will not be signed/issued.
 
+DOMAIN="middleearth.test"
+ISSUER_NAME_CN="Lord of the Rings"
+VAULT_ROLE="middle_earth_role"
+
+ROOT_INTER_FOLDER="./root_inter_certs"
 ROOT="Root"
 INTERMEDIATE="Intermediate"
-CN_ROOT="${CN} ${ROOT} Authority"
-CN_INTERMEDIATE="${CN} ${INTERMEDIATE} Authority"
+CN_ROOT="${ISSUER_NAME_CN} ${ROOT} Authority"
+CN_INTERMEDIATE="${ISSUER_NAME_CN} ${INTERMEDIATE} Authority"
 CN_ROOT_NO_SPACE=${CN_ROOT// /_}
 CN_INTERMEDIATE_NO_SPACE=${CN_INTERMEDIATE// /_}
 ADDRESS="http://127.0.0.1:8200"
@@ -80,7 +85,7 @@ vault write -address=$ADDRESS -tls-skip-verify pki_int/intermediate/set-signed c
 echo
 
 # Create a role named emiddle_earth_role which allows subdomains, and specify the default issuer ref ID as the value of issuer_ref
-vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$VAULT_ROLE" allowed_domains="$ALLOWED_DOMAINS" allow_subdomains=true max_ttl="43800h"
+vault write -address=$ADDRESS -tls-skip-verify pki_int/roles/"$VAULT_ROLE" allowed_domains="$DOMAIN" allow_subdomains=true max_ttl="43800h"
 echo
 
 printf "\n%s" \
