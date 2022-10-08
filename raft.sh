@@ -94,7 +94,7 @@ function start_vault {
     "$VAULT_TOKEN"\
     ""\
     "Use ctrl-shift-v to paste"\
-    "Paste in as Token at http://127.0.0.1:8200 via web browser"\
+    "Paste in as Token at ${ADDRESS} via web browser"\
     ""
 }
 
@@ -171,7 +171,7 @@ function restore_snapshot {
     "$VAULT_TOKEN"\
     ""\
     "Use ctrl-shift-v to paste"\
-    "Paste in as Token at http://127.0.0.1:8200 via web browser"\
+    "Paste in as Token at ${ADDRESS} via web browser"\
     ""
 }
 
@@ -214,10 +214,10 @@ function clean_all {
 
   stop_vault
 
-  echo "Checking for root and intermediate certificate folder: \
+  echo "Checking for root and intermediate certificate folder:\
         ${ROOT_INTER_DIR}"
   if [ -d "${ROOT_INTER_DIR}" ]; then
-    echo "Removing root and intermediate certificates folder: \
+    echo "Removing root and intermediate certificates folder:\
         ${ROOT_INTER_DIR}"
     echo
     rm -rf "${ROOT_INTER_DIR}"
