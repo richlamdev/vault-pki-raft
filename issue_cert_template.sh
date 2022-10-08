@@ -33,13 +33,13 @@ jq -r '.data.certificate,.data.issuing_ca' ${OUTPUT_DIR}/${OUTPUT_FILE} > ${OUTP
 jq -r '.data.private_key' $OUTPUT_DIR/${OUTPUT_FILE} > ${OUTPUT_DIR}/${HOST}_cert.key
 
 printf "\n%s" \
-    "*** To view ${HOST}_cert.key private certificate execute the following command:***"\
-    "openssl rsa -in ${OUTPUT_DIR}/${HOST}_cert.key -check"\
-    ""\
-    ""\
-    "*** To view ${HOST}_cert.crt public certificate execute the following command:***"\
-    "openssl x509 -in ${OUTPUT_DIR}/${HOST}_cert.crt -text -noout"\
-    ""\
-    ""
+  "*** To view ${HOST}_cert.key private certificate execute the following command:***"\
+  "openssl rsa -in ${OUTPUT_DIR}/${HOST}_cert.key -check"\
+  ""\
+  ""\
+  "*** To view ${HOST}_cert.crt public certificate execute the following command:***"\
+  "openssl x509 -in ${OUTPUT_DIR}/${HOST}_cert.crt -text -noout"\
+  ""\
+  ""
 
 touch ${OUTPUT_DIR}/created_$(date +"%Y-%m-%d--%H-%M-%S")

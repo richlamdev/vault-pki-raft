@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# edit the domain to reflect the domain you choose to generate certificates for
+# edit the domain to reflect the domain you choose to generate certificates
 # This is only used for the cleanup function, should you need a quick way
 # to remove all issued certificates stored in folders
 DOMAIN="middleearth.test"
@@ -17,25 +17,25 @@ function stop_vault {
   echo "Checking for vault process running."
   VAULT_ID=$(pgrep -u $USER vault)
   if [ $? -eq 0 ]; then
-      echo "Stopping vault process"
-      echo
-      kill $VAULT_ID
+    echo "Stopping vault process"
+    echo
+    kill $VAULT_ID
   fi
 
   echo "Checking if $STORAGE_FOLDER exists."
   if [ -d "$STORAGE_FOLDER" ]; then
-      echo "Deleting storage folder: $STORAGE_FOLDER"
-      echo
-      rm -rf $STORAGE_FOLDER
+    echo "Deleting storage folder: $STORAGE_FOLDER"
+    echo
+    rm -rf $STORAGE_FOLDER
   fi
 
   echo "Checking if unseal_key exists."
   if [ -f unseal_key ]; then
-      echo "Deleting unseal_key, root_token, and vault.log"
-      echo
-      rm unseal_key
-      rm root_token
-      rm $VAULT_LOG
+    echo "Deleting unseal_key, root_token, and vault.log"
+    echo
+    rm unseal_key
+    rm root_token
+    rm $VAULT_LOG
   fi
 }
 
@@ -43,29 +43,31 @@ function stop_vault {
 function start_vault {
 
   printf "\n%s"\
-      ""\
-      "Removing any prior data or services before continuing..."\
-      ""\
+    ""\
+    "Removing any prior data or services before continuing..."\
+    ""\
 
   stop_vault
 
   printf "\n%s" \
-      "Starting vault"\
-      "Cleaning up existing vault data created"\
-      "Starting vault server"\
-      "Creating storage folder: $STORAGE_FOLDER"\
-      ""\
+    "Starting vault"\
+    "Cleaning up existing vault data created"\
+    "Starting vault server"\
+    "Creating storage folder: $STORAGE_FOLDER"\
+    ""\
 
   mkdir $STORAGE_FOLDER
 
-  vault server -address=$ADDRESS --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
+  vault server -address=$ADDRESS --log-level=trace -config "$CONFIG_FILE" > \
+                "$VAULT_LOG" 2>&1 &
 
   printf "\n%s" \
-      "Initializing and capturing the unseal key and root token" \
-      ""
+    "Initializing and capturing the unseal key and root token" \
+    ""
   sleep 1
 
-  INIT_RESPONSE=$(vault operator init -address="$ADDRESS" -format=json -key-shares 1 -key-threshold 1)
+  INIT_RESPONSE=$(vault operator init -address="$ADDRESS" \
+                  -format=json -key-shares 1 -key-threshold 1)
   echo
 
   UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
@@ -75,24 +77,24 @@ function start_vault {
   echo "$VAULT_TOKEN" > root_token
 
   printf "\n%s"\
-      "Unseal key: $UNSEAL_KEY"\
-      "Root token: $VAULT_TOKEN"\
-      ""\
-      "Unsealing and logging in"\
-      ""
+    "Unseal key: $UNSEAL_KEY"\
+    "Root token: $VAULT_TOKEN"\
+    ""\
+    "Unsealing and logging in"\
+    ""
 
   vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
   vault login -address="$ADDRESS" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
   printf "\n%s"\
-      "The root token is copied to the system buffer"\
-      "Root token:"\
-      "$VAULT_TOKEN"\
-      ""\
-      "Use ctrl-shift-v to paste"\
-      "Paste in as Token at http://127.0.0.1:8200 via web browser"\
-      ""
+    "The root token is copied to the system buffer"\
+    "Root token:"\
+    "$VAULT_TOKEN"\
+    ""\
+    "Use ctrl-shift-v to paste"\
+    "Paste in as Token at http://127.0.0.1:8200 via web browser"\
+    ""
 }
 
 
@@ -103,13 +105,14 @@ function save_snapshot {
   mkdir "backup_$RANDOM_ID"
 
   printf "\n%s" \
-      "Saving snapshot to: backup_$RANDOM_ID/snapshot$RANDOM_ID" \
-      "Backing up current unseal key: backup_$RANDOM_ID/unseal_key$RANDOM_ID"\
-      "Backing up current root token: backup_$RANDOM_ID/root_token$RANDOM_ID"\
-      ""\
-      ""
+    "Saving snapshot to: backup_$RANDOM_ID/snapshot$RANDOM_ID" \
+    "Backing up current unseal key: backup_$RANDOM_ID/unseal_key$RANDOM_ID"\
+    "Backing up current root token: backup_$RANDOM_ID/root_token$RANDOM_ID"\
+    ""\
+    ""
 
-  vault operator raft snapshot save -address="$ADDRESS" "backup_$RANDOM_ID/snapshot$RANDOM_ID"
+  vault operator raft snapshot save -address="$ADDRESS" \
+        "backup_$RANDOM_ID/snapshot$RANDOM_ID"
   cp unseal_key "backup_$RANDOM_ID/unseal_key$RANDOM_ID"
   cp root_token "backup_$RANDOM_ID/root_token$RANDOM_ID"
 }
@@ -118,29 +121,31 @@ function save_snapshot {
 function restore_snapshot {
 
   if [ $# -ne 1 ]; then
-      printf "\n%s" \
-        "Please provide snapshot folder."\
-        "./raft.sh restore backup_xxxx"\
-        "Eg:"\
-        "./raft.sh restore backup_1a6e"\
-      exit 1
+    printf "\n%s" \
+      "Please provide snapshot folder."\
+      "./raft.sh restore backup_xxxx"\
+      "Eg:"\
+      "./raft.sh restore backup_1a6e"\
+    exit 1
   fi
 
-  #retrieve ID of backup folder - last four chars of the folder name
+  # retrieve ID of backup folder - last four chars of the folder name
   ID=${1:7:4}
 
   printf "\n%s" \
-      "Restoring vault from folder: $1"\
-      ""\
-      "Restoring snapshot from file backup_$ID/snapshot$ID"\
-      "Using unseal token from file backup_$ID/unseal_key$ID"\
-      "Using root token from file backup_$ID/unseal_key$ID"\
-      ""
+    "Restoring vault from folder: $1"\
+    ""\
+    "Restoring snapshot from file backup_$ID/snapshot$ID"\
+    "Using unseal token from file backup_$ID/unseal_key$ID"\
+    "Using root token from file backup_$ID/unseal_key$ID"\
+    ""
 
-  #vault operator raft snapshot restore -address="$ADDRESS" -force $1
-  vault operator raft snapshot restore -address="$ADDRESS" -force backup_$ID/snapshot$ID
+  # force restoration of the backup snapshot
+  vault operator raft snapshot restore -address="$ADDRESS" \
+        -force backup_$ID/snapshot$ID
 
-  # copy backup unseal key and root token as current unseal key and root token (copy to current working directory)
+  # copy backup unseal key and root token as current unseal key and root token
+  # in other words copy to the current working directory
   cp backup_$ID/unseal_key$ID unseal_key
   cp backup_$ID/root_token$ID root_token
 
@@ -148,34 +153,34 @@ function restore_snapshot {
   VAULT_TOKEN=$(cat backup_$ID/root_token$ID)
 
   printf "\n%s" \
-      "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
-      "Setting VAULT_TOKEN to token: $VAULT_TOKEN" \
-      ""\
-      "Unsealing and logging in" \
-      ""\
-      ""
+    "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
+    "Setting VAULT_TOKEN to token: $VAULT_TOKEN" \
+    ""\
+    "Unsealing and logging in" \
+    ""\
+    ""
 
   vault operator unseal -address="$ADDRESS" "$UNSEAL_KEY"
   vault login -address="$ADDRESS" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
   printf "\n%s"\
-      "The root token is copied to the system buffer"\
-      "Root token:"\
-      "$VAULT_TOKEN"\
-      ""\
-      "Use ctrl-shift-v to paste"\
-      "Paste in as Token at http://127.0.0.1:8200 via web browser"\
-      ""
+    "The root token is copied to the system buffer"\
+    "Root token:"\
+    "$VAULT_TOKEN"\
+    ""\
+    "Use ctrl-shift-v to paste"\
+    "Paste in as Token at http://127.0.0.1:8200 via web browser"\
+    ""
 }
 
 
 function put_data {
 
   printf "\n%s" \
-      "Entering mock data"\
-      ""\
-      ""
+    "Entering mock data"\
+    ""\
+    ""
 
   vault secrets enable -address="$ADDRESS" -path=kv kv-v2
   vault kv put -address="$ADDRESS" /kv/apikey webapp=AAABBB238472320238CCC
@@ -185,9 +190,9 @@ function put_data {
 function get_data {
 
   printf "\n%s" \
-      "Fetching mock data"\
-      ""\
-      ""
+    "Fetching mock data"\
+    ""\
+    ""
 
   vault kv get -address="$ADDRESS" /kv/apikey
 }
@@ -196,9 +201,9 @@ function get_data {
 function get_status {
 
   printf "\n%s" \
-      "vault status"\
-      ""\
-      ""
+    "vault status"\
+    ""\
+    ""
 
   vault status -address="$ADDRESS"
 }
@@ -210,32 +215,33 @@ function clean_all {
 
   echo "Checking for root and intermediate certificate folder: root_inter_certs"
   if [ -d "root_inter_certs" ]; then
-      echo "Removing root and intermediate certificates folder: root_inter_certs"
-      echo
-      rm -rf root_inter_certs
+    echo "Removing root and intermediate certificates folder: root_inter_certs"
+    echo
+    rm -rf root_inter_certs
   fi
 
   echo "Checking for any *.${DOMAIN} folders"
   CERTS_EXISTS=$(ls *${DOMAIN} 1> /dev/null 2>&1)
   if [ $? -eq 0 ]; then
-      echo "Removing *.${DOMAIN} folders"
-      echo
-      rm -rf *.${DOMAIN}
+    echo "Removing *.${DOMAIN} folders"
+    echo
+    rm -rf *.${DOMAIN}
   fi
 
   echo "Checking for any backup folders"
   BACKUPS_EXISTS=$(ls backup_* 1> /dev/null 2>&1)
   if [ $? -eq 0 ]; then
-      echo "Removing backup_* folders"
-      echo
-      rm -rf backup_*
+    echo "Removing backup_* folders"
+    echo
+    rm -rf backup_*
   fi
 
   echo
 }
 
+function main {
 
-case "$1" in
+  case "$1" in
     start)
       start_vault
       ;;
@@ -266,13 +272,15 @@ case "$1" in
       ;;
     *)
       printf "\n%s" \
-          "This script creates a single Vault instance using raft storage." \
-          "" \
-          "Usage: $0 [start|stop|save|restore|status|cleanup|putdata|getdata]" \
-          ""
+        "This script creates a single Vault instance using raft storage." \
+        "" \
+        "Usage: $0 [start|stop|save|restore|status|cleanup|putdata|getdata]" \
+        ""
       ;;
-esac
+  esac
+}
 
+main "$@"
 
 #vault secrets enable -path=kvDemo -version=2 kv
 #vault kv put /kvDemo/legacy_app_creds_01 username=legacyUser password=supersecret
