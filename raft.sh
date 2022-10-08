@@ -5,6 +5,7 @@
 # to remove all issued certificates stored in folders
 DOMAIN="middleearth.test"
 
+ROOT_INTER_DIR="./root_inter_certs"
 CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
 STORAGE_FOLDER="./data"
@@ -213,11 +214,13 @@ function clean_all {
 
   stop_vault
 
-  echo "Checking for root and intermediate certificate folder: root_inter_certs"
-  if [ -d "root_inter_certs" ]; then
-    echo "Removing root and intermediate certificates folder: root_inter_certs"
+  echo "Checking for root and intermediate certificate folder: \
+        ${ROOT_INTER_DIR}"
+  if [ -d "${ROOT_INTER_DIR}" ]; then
+    echo "Removing root and intermediate certificates folder: \
+        ${ROOT_INTER_DIR}"
     echo
-    rm -rf root_inter_certs
+    rm -rf "${ROOT_INTER_DIR}"
   fi
 
   echo "Checking for any *.${DOMAIN} folders"
@@ -225,7 +228,7 @@ function clean_all {
   if [ $? -eq 0 ]; then
     echo "Removing *.${DOMAIN} folders"
     echo
-    rm -rf *.${DOMAIN}
+    rm -rf *."${DOMAIN}"
   fi
 
   echo "Checking for any backup folders"
