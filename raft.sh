@@ -61,15 +61,18 @@ function start_vault {
 
   mkdir $STORAGE_FOLDER
 
-  vault server -address=${ADDRESS} --log-level=trace -config "$CONFIG_FILE" > \
-                "$VAULT_LOG" 2>&1 &
+  #vault server -address=${ADDRESS} --log-level=trace -config "$CONFIG_FILE" > \
+  #              "$VAULT_LOG" 2>&1 &
+  vault server --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
 
   printf "\n%s" \
     "Initializing and capturing the unseal key and root token" \
     ""
   sleep 1
 
-  INIT_RESPONSE=$(vault operator init -address="${ADDRESS}" \
+  #INIT_RESPONSE=$(vault operator init -address="${ADDRESS}" \
+  #                -format=json -key-shares 1 -key-threshold 1)
+  INIT_RESPONSE=$(vault operator init \
                   -format=json -key-shares 1 -key-threshold 1)
   echo
 
@@ -86,8 +89,10 @@ function start_vault {
     "Unsealing and logging in"\
     ""
 
-  vault operator unseal -address="${ADDRESS}" "$UNSEAL_KEY"
-  vault login -address="${ADDRESS}" "$VAULT_TOKEN"
+  #vault operator unseal -address="${ADDRESS}" "$UNSEAL_KEY"
+  vault operator unseal "$UNSEAL_KEY"
+  #vault login -address="${ADDRESS}" "$VAULT_TOKEN"
+  vault login "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
   printf "\n%s"\
@@ -105,19 +110,20 @@ function save_snapshot {
 
   RANDOM_ID=$(openssl rand -hex 2)
 
-  mkdir "backup_$RANDOM_ID"
+  mkdir "backup_${RANDOM_ID}"
 
   printf "\n%s" \
-    "Saving snapshot to: backup_${RANDOOM_ID}/snapshot${RANDOOM_ID}" \
-    "Saving unseal key to: backup_${RANDOOM_ID}/unseal_key${RANDOOM_ID}"\
-    "Saving root token to: backup_${RANDOOM_ID}/root_token${RANDOOM_ID}"\
+    "Saving snapshot to: backup_${RANDOM_ID}/snapshot${RANDOM_ID}"\
+    "Saving unseal key to: backup_${RANDOM_ID}/unseal_key${RANDOM_ID}"\
+    "Saving root token to: backup_${RANDOM_ID}/root_token${RANDOM_ID}"\
     ""\
     ""
 
-  vault operator raft snapshot save -address="${ADDRESS}"\
-        "backup_${RANDOOM_ID}/snapshot${RANDOOM_ID}"
-  cp unseal_key "backup_${RANDOOM_ID}/unseal_key${RANDOOM_ID}"
-  cp root_token "backup_${RANDOOM_ID}/root_token${RANDOOM_ID}"
+  #vault operator raft snapshot save -address="${ADDRESS}"\
+        #"backup_${RANDOM_ID}/snapshot${RANDOM_ID}"
+  vault operator raft snapshot save "backup_${RANDOM_ID}/snapshot${RANDOM_ID}"
+  cp unseal_key "backup_$RANDOM_ID/unseal_key$RANDOM_ID"
+  cp root_token "backup_${RANDOM_ID}/root_token${RANDOM_ID}"
 }
 
 
@@ -145,8 +151,9 @@ function restore_snapshot {
     ""
 
   # force restoration of the backup snapshot
-  vault operator raft snapshot restore -address="${ADDRESS}" \
-        -force backup_"${ID}"/snapshot"${ID}"
+  #vault operator raft snapshot restore -address="${ADDRESS}" \
+        #-force backup_"${ID}"/snapshot"${ID}"
+  vault operator raft snapshot restore -force backup_"${ID}"/snapshot"${ID}"
 
   # copy backup unseal key and root token as current unseal key and root token
   # in other words copy to the current working directory
@@ -164,8 +171,10 @@ function restore_snapshot {
     ""\
     ""
 
-  vault operator unseal -address="${ADDRESS}" "$UNSEAL_KEY"
-  vault login -address="${ADDRESS}" "$VAULT_TOKEN"
+  #vault operator unseal -address="${ADDRESS}" "$UNSEAL_KEY"
+  #vault login -address="${ADDRESS}" "$VAULT_TOKEN"
+  vault operator unseal "$UNSEAL_KEY"
+  vault login "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
   printf "\n%s"\
@@ -174,7 +183,7 @@ function restore_snapshot {
     "$VAULT_TOKEN"\
     ""\
     "Use ctrl-v to paste"\
-    "Use(paste) token at ${ADDRESS} via web browser, to login to vault GUI"\
+    "Paste the token at ${ADDRESS} via web browser, to login to the Vault GUI"\
     ""
 }
 
@@ -246,6 +255,8 @@ function clean_all {
 }
 
 function main {
+
+  source env.sh
 
   case "$1" in
     start)
