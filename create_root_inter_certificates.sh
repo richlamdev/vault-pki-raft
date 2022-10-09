@@ -17,6 +17,7 @@ CN_INTER="${ISSUER_NAME_CN} Intermediate Authority"
 CN_ROOT_NO_SPACE="${CN_ROOT// /_}"
 CN_INTER_NO_SPACE="${CN_INTER// /_}"
 ADDRESS="http://127.0.0.1:8200"
+#VAULT_ADDR="http://127.0.0.1:8200"
 
 #set -aex
 
