@@ -17,6 +17,7 @@ CN_INTER="${ISSUER_NAME_CN} Intermediate Authority"
 CN_ROOT_NO_SPACE="${CN_ROOT// /_}"
 CN_INTER_NO_SPACE="${CN_INTER// /_}"
 ADDRESS="http://127.0.0.1:8200"
+NO_TLS="-tls-skip-verify"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 #set -aex
@@ -32,44 +33,33 @@ printf "\n%s" \
   ""\
 
 # login/authenticate locally
-#vault login -address="${ADDRESS}" -tls-skip-verify $(cat root_token)
-vault login -tls-skip-verify $(cat root_token)
+vault login "${NO_TLS}" $(cat root_token)
 echo
 
 # enable the PKI secrets engine
-#vault secrets enable -address="${ADDRESS}" -tls-skip-verify pki
-vault secrets enable -tls-skip-verify pki
+vault secrets enable "${NO_TLS}" pki
 echo
 
 # increase TTL by tuning the secrets engine, set to 30 days
-#vault secrets tune -address="${ADDRESS}" -tls-skip-verify \
-#      -max-lease-ttl=87600h pki
-vault secrets tune -tls-skip-verify -max-lease-ttl=87600h pki
+vault secrets tune "${NO_TLS}" -max-lease-ttl=87600h pki
 echo
 
 # configure a CA certificate and private key;
 # the private key is stored internally in Vault
-#vault write -address="${ADDRESS}" -tls-skip-verify \
-      #-field=certificate pki/root/generate/internal \
-      #common_name="${CN_ROOT}" ttl=87600h | \
-      #tee "$ROOT_INTER_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
-vault write -tls-skip-verify -field=certificate pki/root/generate/internal \
-      common_name="${CN_ROOT}" ttl=87600h | \
+vault write "${NO_TLS}" -field=certificate pki/root/generate/internal \
+      common_name="${CN_ROOT}" ttl=87600h ou="my dept" | \
       tee "$ROOT_INTER_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
 echo
 
 # list the issuer information for the root CA
-# vault list -address="${ADDRESS}" pki/issuers/
+# vault list pki/issuers/
 
 # read the issuer with its ID to get the certificates
 # and other metadata about the issuer.
 # vault read pki/issuer/<number/id output from previous command>
 
 # configure the CA and the CRL URLs.
-#vault write -address="${ADDRESS}" -tls-skip-verify \
-      #pki/config/urls issuing_certificates="${ADDRESS}/v1/pki/ca" \
-      #crl_distribution_points="${ADDRESS}/v1/pki/crl"
-vault write -tls-skip-verify pki/config/urls \
+vault write "${NO_TLS}" pki/config/urls \
       issuing_certificates="${ADDRESS}/v1/pki/ca" \
       crl_distribution_points="${ADDRESS}/v1/pki/crl"
 echo
@@ -82,23 +72,17 @@ printf "\n%s" \
   ""
 
 # enable the pki secrets engine at the pki_int path
-#vault secrets enable -address="${ADDRESS}" -tls-skip-verify -path=pki_int pki
-vault secrets enable -tls-skip-verify -path=pki_int pki
+#vault secrets enable -address="${ADDRESS}" "${NO_TLS}" -path=pki_int pki
+vault secrets enable "${NO_TLS}" -path=pki_int pki
 echo
 
 # Tune the pki_int secrets engine to issue certificates with a maximum
 # time-to-live (TTL) of 43800 hours or five years
-#vault secrets tune -address="${ADDRESS}" -tls-skip-verify \
-#      -max-lease-ttl=43800h pki_int
-vault secrets tune -tls-skip-verify -max-lease-ttl=43800h pki_int
+vault secrets tune "${NO_TLS}" -max-lease-ttl=43800h pki_int
 echo
 
 # Generate an intermediate and save the CSR as $CN_pki_intermediate.csr
-#vault write -address="${ADDRESS}" -tls-skip-verify \
-      #-format=json pki_int/intermediate/generate/internal \
-      #common_name="${CN_INTER}" | jq -r '.data.csr' > \
-      #"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr
-vault write -tls-skip-verify -format=json \
+vault write "${NO_TLS}" -format=json \
       pki_int/intermediate/generate/internal \
       common_name="${CN_INTER}" | jq -r '.data.csr' > \
       "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr
@@ -106,31 +90,20 @@ echo
 
 # Sign the intermediate certificate with the root CA private key,
 # and save the generated certificate as intermediate.cert.pem
-#vault write -address="${ADDRESS}" -tls-skip-verify \
-      #-format=json pki/root/sign-intermediate \
-      #csr=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr \
-      #format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > \
-      #"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
-vault write -tls-skip-verify -format=json pki/root/sign-intermediate \
+vault write "${NO_TLS}" -format=json pki/root/sign-intermediate \
       csr=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr \
       format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > \
       "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
 echo
 
 # Import the signed CSR into Vault
-#vault write -address="${ADDRESS}" -tls-skip-verify \
-#      pki_int/intermediate/set-signed \
-#      certificate=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
-vault write -tls-skip-verify pki_int/intermediate/set-signed \
+vault write "${NO_TLS}" pki_int/intermediate/set-signed \
       certificate=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
 echo
 
 # Create a role named $VAULT_ROLE which will allow subdomains,
 # and specify the default issuer ref ID as the value of issuer_ref
-#vault write -address="${ADDRESS}" -tls-skip-verify \
-      #pki_int/roles/"$VAULT_ROLE" \
-      #allowed_domains="$DOMAIN" allow_subdomains=true max_ttl="43800h"
-vault write -tls-skip-verify pki_int/roles/"$VAULT_ROLE" \
+vault write "${NO_TLS}" pki_int/roles/"$VAULT_ROLE" \
       allowed_domains="$DOMAIN" allow_subdomains=true max_ttl="43800h"
 echo
 

@@ -24,7 +24,6 @@ TTL="9552h"
 
 OUT_DIR="${SUBJECT_CN}"
 OUT_FILE="${HOST}_csr_signed_output.json"
-ADDRESS="http://127.0.0.1:8200"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 
@@ -35,11 +34,6 @@ if [ ! -d "${OUT_DIR}" ]
     mkdir "${OUT_DIR}"
   fi
 
-#vault write -address="${ADDRESS}" -format=json pki_int/issue/"${VAULT_ROLE}" \
-      #common_name="${SUBJECT_CN}" ip_sans="${IP_SAN1}" \
-      #alt_names="${ALT_NAME1}" \
-      #ttl="${TTL}" | \
-      #tee "${OUT_DIR}/${OUT_FILE}"
 vault write -format=json pki_int/issue/"${VAULT_ROLE}" \
       common_name="${SUBJECT_CN}" \
       ip_sans="${IP_SAN1}" \
@@ -48,7 +42,7 @@ vault write -format=json pki_int/issue/"${VAULT_ROLE}" \
 
 # alternative example command that allows multiple SAN entries
 # adjust as needed, and populate variables accordingly at the top of this script
-#vault write -address=$ADDRESS -format=json pki_int/issue/"$VAULT_ROLE" \
+#vault write -format=json pki_int/issue/"$VAULT_ROLE" \
 #      common_name=${SUBJECT_CN} ip_sans="${IP_SAN1},${IP_SAN2}" \
 #      alt_names="${ALT_NAME1},${ALT_NAME2}" ttl=${TTL} | tee ${OUT_FILE}
 
