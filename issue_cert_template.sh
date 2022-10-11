@@ -24,17 +24,18 @@ TTL="9552h"
 
 OUT_DIR="${SUBJECT_CN}"
 OUT_FILE="${HOST}_csr_signed_output.json"
+NO_TLS="-tls-skip-verify"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 
-source env.sh
+source ./env.sh
 
 if [ ! -d "${OUT_DIR}" ]
   then
     mkdir "${OUT_DIR}"
   fi
 
-vault write -format=json pki_int/issue/"${VAULT_ROLE}" \
+vault write "${NO_TLS}" -format=json pki_int/issue/"${VAULT_ROLE}" \
       common_name="${SUBJECT_CN}" \
       ip_sans="${IP_SAN1}" \
       alt_names="${ALT_NAME1}" \

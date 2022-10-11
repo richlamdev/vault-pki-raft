@@ -22,7 +22,7 @@ NO_TLS="-tls-skip-verify"
 
 #set -aex
 
-source env.sh
+source ./env.sh
 
 mkdir "$ROOT_INTER_DIR"
 
@@ -72,7 +72,6 @@ printf "\n%s" \
   ""
 
 # enable the pki secrets engine at the pki_int path
-#vault secrets enable -address="${ADDRESS}" "${NO_TLS}" -path=pki_int pki
 vault secrets enable "${NO_TLS}" -path=pki_int pki
 echo
 

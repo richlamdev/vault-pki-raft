@@ -10,6 +10,7 @@ CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
 STORAGE_FOLDER="./data"
 ADDRESS="http://127.0.0.1:8200"
+NO_TLS="-tls-skip-verify"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 
@@ -61,8 +62,6 @@ function start_vault {
 
   mkdir $STORAGE_FOLDER
 
-  #vault server -address=${ADDRESS} --log-level=trace -config "$CONFIG_FILE" > \
-  #              "$VAULT_LOG" 2>&1 &
   vault server --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
 
   printf "\n%s" \
@@ -70,8 +69,6 @@ function start_vault {
     ""
   sleep 1
 
-  #INIT_RESPONSE=$(vault operator init -address="${ADDRESS}" \
-  #                -format=json -key-shares 1 -key-threshold 1)
   INIT_RESPONSE=$(vault operator init \
                   -format=json -key-shares 1 -key-threshold 1)
   echo
@@ -89,9 +86,7 @@ function start_vault {
     "Unsealing and logging in"\
     ""
 
-  #vault operator unseal -address="${ADDRESS}" "$UNSEAL_KEY"
   vault operator unseal "$UNSEAL_KEY"
-  #vault login -address="${ADDRESS}" "$VAULT_TOKEN"
   vault login "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
@@ -119,8 +114,6 @@ function save_snapshot {
     ""\
     ""
 
-  #vault operator raft snapshot save -address="${ADDRESS}"\
-        #"backup_${RANDOM_ID}/snapshot${RANDOM_ID}"
   vault operator raft snapshot save "backup_${RANDOM_ID}/snapshot${RANDOM_ID}"
   cp unseal_key "backup_$RANDOM_ID/unseal_key$RANDOM_ID"
   cp root_token "backup_${RANDOM_ID}/root_token${RANDOM_ID}"
@@ -151,8 +144,6 @@ function restore_snapshot {
     ""
 
   # force restoration of the backup snapshot
-  #vault operator raft snapshot restore -address="${ADDRESS}" \
-        #-force backup_"${ID}"/snapshot"${ID}"
   vault operator raft snapshot restore -force backup_"${ID}"/snapshot"${ID}"
 
   # copy backup unseal key and root token as current unseal key and root token
@@ -171,8 +162,6 @@ function restore_snapshot {
     ""\
     ""
 
-  #vault operator unseal -address="${ADDRESS}" "$UNSEAL_KEY"
-  #vault login -address="${ADDRESS}" "$VAULT_TOKEN"
   vault operator unseal "$UNSEAL_KEY"
   vault login "$VAULT_TOKEN"
 
@@ -185,6 +174,7 @@ function restore_snapshot {
     "Use ctrl-v to paste"\
     "Paste the token at ${ADDRESS} via web browser, to login to the Vault GUI"\
     ""
+  source ./env.sh
 }
 
 
@@ -195,8 +185,8 @@ function put_data {
     ""\
     ""
 
-  vault secrets enable -address="${ADDRESS}" -path=kv kv-v2
-  vault kv put -address="${ADDRESS}" /kv/apikey webapp=AAABBB238472320238CCC
+  vault secrets enable -path=kv kv-v2
+  vault kv put /kv/apikey webapp=AAABBB238472320238CCC
 }
 
 
@@ -207,19 +197,10 @@ function get_data {
     ""\
     ""
 
-  vault kv get -address="${ADDRESS}" /kv/apikey
+  vault kv get /kv/apikey
 }
 
 
-function get_status {
-
-  printf "\n%s" \
-    "vault status"\
-    ""\
-    ""
-
-  vault status -address="${ADDRESS}"
-}
 
 
 function clean_all {
@@ -256,7 +237,7 @@ function clean_all {
 
 function main {
 
-  source env.sh
+  source ./env.sh
 
   case "$1" in
     start)
@@ -281,9 +262,6 @@ function main {
     getdata)
       get_data
       ;;
-    status)
-      get_status
-      ;;
     cleanup)
       clean_all
       ;;
@@ -291,7 +269,7 @@ function main {
       printf "\n%s" \
         "This script creates a single Vault instance using raft storage." \
         "" \
-        "Usage: $0 [start|stop|save|restore|status|cleanup|putdata|getdata]" \
+        "Usage: $0 [start|stop|save|restore|cleanup|putdata|getdata]" \
         ""
       ;;
   esac
