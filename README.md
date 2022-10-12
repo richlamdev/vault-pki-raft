@@ -45,9 +45,20 @@ or modification.
 
 ## Quick Start
 
-```git clone https://github.com/richlamdev/vault-pki-raft.git```
-```cd vault-pki-raft```
-```./raft start```
-```./create_root_inter_certs.sh```
+```git clone https://github.com/richlamdev/vault-pki-raft.git```\
+```cd vault-pki-raft```\
+```./raft start```\
+```./create_root_inter_certs.sh```\
 ```./issue_cert_template.sh```
+
+This the above will execute the following:
+1. Deploy a single Vault instance with a raft backend
+2. Enable Vault PKI Engine / create a Certificate Authority (CA)
+    1. Create root certificate and self sign this certificate.\
+       This demo names the root CA as "Lord of the Rings"
+    2. Create intermediate certificate signing request, have the root authority sign
+       this certificate and store it within the CA.
+    3. Create a role to sign leaf certificates.  This role is authorized to
+       sign subdomains of middleearth.test.
+3. Issue a \"template\" certificate with a Common Name (CN) ```template.middleearth.test```
 
