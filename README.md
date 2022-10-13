@@ -72,8 +72,8 @@ The above will perform the following:
 
 
 ### References
-[HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)
-[HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)
-[HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)
+[HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
+[HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)\
+[HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)\
 
 [smallstep PKI article](https://smallstep.com/blog/everything-pki/)
