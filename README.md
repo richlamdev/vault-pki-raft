@@ -19,11 +19,11 @@ built-in commands.
 
 ## Purpose
 
-The primary purpose is to a development/test environment to learn PKI with HashiCorp Vault.
+The primary purpose is to provide a development/test environment to learn PKI with HashiCorp Vault.
 
-This platform could potentially be used for personal/private networks, if you accept
-the shortcomings.  The shortcomings would primarily be the lack comprehensive features,
-and proper deployment of HashiCorp raft backend infrastructure.
+This repo (platform) could potentially be used for personal/private networks, if you accept
+the shortcomings.  Some limitations would be the lack comprehensive features and proper deployment
+of HashiCorp raft backend infrastructure.
 
 
 
