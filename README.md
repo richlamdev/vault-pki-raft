@@ -41,13 +41,13 @@ Naturally this repo will work with other \*nix Operating Systems and/or Shells w
 2. [Jq](https://stedolan.github.io/jq/download/)
 3. [OpenSSL](https://wiki.openssl.org/index.php/Binaries)
 
-### Optional, but preferred - this enables convenient copy and paste of login token
+### Optional, but preferred - this enables convenient copy and paste of root token to login to Vault. (either CLI and/or GUI)
 4. [xclip](https://github.com/astrand/xclip)
 
 ### Knowledge
 
-1. Basic understanding of TLS certificates.  If knowledge is limited, then this is the perfect
-   platform to learn and play with certificates to gain a better understanding.
+1. Basic understanding of TLS certificates.  If knowledge is limited, then this 
+   platform is great to learn and play with TLS certificates and Certificate Authority (CA)
 
 2. Basic understanding of [HashiCorp Vault](https://www.vaultproject.io/).
 
@@ -66,23 +66,32 @@ Steps:
 The above will perform the following:
 1. Deploy a single Vault instance with a raft backend. - [raft.sh]
 
-2. Enable Vault PKI Engine / create a Certificate Authority (CA) - [create_root_inter_certs.sh]
-    a. Create root certificate and self sign the certificate.\
+2. Enable Vault PKI Engine / create a CA - [create_root_inter_certs.sh]\
+    a. Create a root certificate and self sign the certificate.
        The root CA is designated by the variable ISSUER_NAME_CN.
-       For the purposes of this demo, the ISSUER_NAME_CN is "Lord of the Rings".
+       For the purposes of this demo, the ISSUER_NAME_CN is "Lord of the Rings".  Change this value as you like.\
 
-    b. Create intermediate certificate signing request, have the root authority sign
+    b. Create an intermediate certificate signing request, have the root authority sign
        this certificate and store it within the CA.
 
-    c. Create a role to sign leaf certificates.  This role is authorized to
-       sign subdomains as designate by the variable assigned in VAULT_ROLE.
-       In this case, the role is authorized to sign subdomains of "middleearth.test".
+    c. Create a role designated by the variable VAULT_ROLE to sign leaf certificates.
+       Note the value of VAULT_ROLE, itself, is not critical.  However, the VAULT_ROLE value
+       must be the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.  
+       This role name is referenced (used) to sign leaf certificates.  If they do not match, an error will occur.
+       Change this value as you like, just keep them consistent.
+       VAULT_ROLE is authorized to sign subdomains indicated by the variable DOMAIN, 
+       in this case the Second Level Domain (SLD) and Top Level Domain(TLD), combined is
+       "middleearth.test".  Again, change this value as you like.
 
     d. The self-signed CA root certificate and intermediate certificate chain are stored
        in the directory as designated by the variable $ROOT_INTER_DIR.  The directory is set
        to "./root_inter_certs".
 
-3. Issue a \"template\" certificate with a Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]
+3. Issue a \"template\" certificate with a Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]
+    a. The resulting public certificate, key file, as well as entire signed json blob is stored in directory
+       designated by the variable SUBJECT_CN.  Edit the HOST and DOMAIN variables to change the value of SUBJECT_CN.
+       Ensure the value of DOMAIN is the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.
+       In this example, the resulting certificate files will be stored i nthe directory ```template.middleearth.test```
 
 
 
