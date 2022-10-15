@@ -56,11 +56,11 @@ Naturally this repo will work with other \*nix Operating Systems and/or Shells w
 
 ## Quick Start
 
-Clone the Repo:
+Clone the Repo:\
 ```git clone https://github.com/richlamdev/vault-pki-raft.git```\
 ```cd vault-pki-raft```\
 
-Steps:
+Steps:\
 ```./raft start```\
 ```./create_root_inter_certs.sh```\
 ```./issue_cert_template.sh```
@@ -87,13 +87,38 @@ The above will perform the following:
 
     d. The self-signed CA root certificate and intermediate certificate chain are stored
        in the directory as designated by the variable $ROOT_INTER_DIR.  The directory is set
-       to "./root_inter_certs".
+       to "./root_inter_certs".  Import the root certificate from this folder to your
+       Operating System Trusted Store or Web Browser enable 
 
 3. Issue a \"template\" certificate with a Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]
     a. The resulting public certificate, key file, as well as entire signed json blob is stored in directory
        designated by the variable SUBJECT_CN.  Edit the HOST and DOMAIN variables to change the value of SUBJECT_CN.
        Ensure the value of DOMAIN is the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.
        In this example, the resulting certificate files will be stored in the directory ```template.middleearth.test```
+
+Inspecting template.middleearth.test certificate with openssl:
+
+![OpenSSL Inpection](images/template_middleearth_test_certificate.jpg)
+
+Deploying the certificate to a web server and viewing template.middleearth.test certificate
+via Firefox browser:
+
+![Firefox2](images/firefox_certificate2.png)
+
+If you import the root certificate to your trusted store or browser, as well as,
+update your local DNS to resolve template.middleaearth.test you will observe the certificate
+is trusted, denoted by the lock symbol in your browser:
+
+![DNS](images/certificate_lock_dns_name.png)
+
+Furthermore, because the template script populates an IP address in the Subject Alternative Name (SAN)
+we have "trust" established when visiting the web URL via IP.  Note, it's atypical to deploy
+and IP in the SAN for public certificates, however, for internal/private networks it is at your
+discretion.  This was deployed to a Linux VM running NGINX.  Naturally, docker and/or apache 
+would also suffice for testing purposes.
+
+![IP SAN](images/certificate_lock_ip_san.png)
+
 
 
 
@@ -103,5 +128,4 @@ The above will perform the following:
 [HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
 [HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)\
 [HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)\
-
 [smallstep PKI article](https://smallstep.com/blog/everything-pki/)
