@@ -65,13 +65,15 @@ Steps:\
 ```./create_root_inter_certs.sh```\
 ```./issue_cert_template.sh```
 
+### Quick Start Explanation
+
 The above will perform the following:
 1. Deploy a single Vault instance with a raft backend. - [raft.sh]
 
 2. Enable Vault PKI Engine / create a CA - [create_root_inter_certs.sh]\
     a. Creates a root certificate and self sign the certificate.
        The root CA is designated by the variable ISSUER_NAME_CN.
-       For the purposes of this demo, the ISSUER_NAME_CN is "Lord of the Rings".  Change this value as you like.\
+       By default the ISSUER_NAME_CN is "Lord of the Rings".  Change this value as you like.\
 
     b. Creates an intermediate certificate signing request, have the root authority sign
        this certificate and store it within the CA.
@@ -82,43 +84,60 @@ The above will perform the following:
        This role name is referenced (used) to sign leaf certificates.  If they do not match, an error will occur.
        Change this value if you like, just keep them consistent.
        VAULT_ROLE is authorized to sign subdomains indicated by the variable DOMAIN, 
-       in this case the Second Level Domain (SLD) and Top Level Domain(TLD), combined is
+       in this case the Second Level Domain (SLD) and Top Level Domain(TLD), the default value is
        "middleearth.test".  Again, change this value as you like.
 
     d. The self-signed CA root certificate and intermediate certificate chain are stored
-       in the directory as designated by the variable $ROOT_INTER_DIR.  The directory is set
-       to "./root_inter_certs".  Import the root certificate from this folder to your
-       Operating System Trusted Store or Web Browser enable 
+       in the directory as designated by the variable $ROOT_INTER_DIR.  The directory default
+       is "./root_inter_certs".  Import the root certificate from this folder to your
+       Operating System Trusted Store or Web Browser.  If you're unaware how to import the root certificate
+       to either, a quick google search will help you.
 
-3. Issue a \"template\" certificate with a Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]
+3. Issue a \"template\" certificate with a default Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]
     a. The resulting public certificate, key file, as well as entire signed json blob is stored in directory
-       designated by the variable SUBJECT_CN.  Edit the HOST and DOMAIN variables to change the value of SUBJECT_CN.
+       designated by the variable SUBJECT_CN.  Edit the HOST and DOMAIN variables to change the default value of SUBJECT_CN.
        Ensure the value of DOMAIN is the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.
        In this example, the resulting certificate files will be stored in the directory ```template.middleearth.test```
 
-Inspecting template.middleearth.test certificate with openssl:
+<br/>
 
-![OpenSSL Inpection](images/template_middleearth_test_certificate.jpg)
+Inspecting template.middleearth.test certificate via openssl command:
+
+![OpenSSL Inpection](images/openssl_inspection_certificate.png)
+<br/>
+<br/>
 
 Optionally deploy the template certificate to a web server for inspection via web browser.
 In the below examples I'm using Nginx in a Ubuntu Virtual Machine (VM).  Naturally, alternatives
-would achieve similar, such as Docker with Apache/Nginx, Windows & IIS etc etc.
+would achieve similar, such as Docker with Apache or Nginx, Windows & IIS etc.
 The certificate inpsected via Firefox browser:
 
 ![Firefox2](images/firefox_certificate2.png)
+<br/>
+<br/>
 
-If you import the root certificate to your trusted store or browser, as well as,
-update your local DNS (or update local /etc/hosts file) to resolve template.middleaearth.test
+If you import the root certificate to your trusted store or browser update your local DNS 
+(or update local /etc/hosts file) to resolve template.middleaearth.test
 you will observe the certificate is trusted, denoted by the locked padlock symbol in your browser:
-
-![DNS](images/certificate_lock_dns_name.png)
+![DNS](images/trusted_certificate_DNS.png)
+<br/>
+<br/>
 
 Furthermore, because the template script populates an IP address in the Subject Alternative Name (SAN)
 we have "trust" established when visiting the web URL via IP.  Note, it's atypical to deploy
 and IP in the SAN for public certificates, however, for internal/private networks this is your
 discretion.
 
-![IP SAN](images/certificate_lock_ip_san.png)
+![IP SAN](images/trusted_certificate_SAN_IP.png)
+<br/>
+<br/>
+
+
+If the root certificate is _not_ imported to the Web browser or added to the Operating System
+trusted store, then an error similar to this will appear:
+
+![Certificate error](images/not_trusted_certificate_dns.png)
+<br/>
 
 
 
