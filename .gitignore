@@ -16,6 +16,6 @@ recovery*
 request*
 data/
 root_inter_certs/
-template*
+template.*
 *.snap
 snap*
