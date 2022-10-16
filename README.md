@@ -100,22 +100,23 @@ Inspecting template.middleearth.test certificate with openssl:
 
 ![OpenSSL Inpection](images/template_middleearth_test_certificate.jpg)
 
-Deploying the certificate to a web server and viewing template.middleearth.test certificate
-via Firefox browser:
+Optionally deploy the template certificate to a web server for inspection via web browser.
+In the below examples I'm using Nginx in a Ubuntu Virtual Machine (VM).  Naturally, alternatives
+would achieve similar, such as Docker with Apache/Nginx, Windows & IIS etc etc.
+The certificate inpsected via Firefox browser:
 
 ![Firefox2](images/firefox_certificate2.png)
 
 If you import the root certificate to your trusted store or browser, as well as,
-update your local DNS to resolve template.middleaearth.test you will observe the certificate
-is trusted, denoted by the lock symbol in your browser:
+update your local DNS (or update local /etc/hosts file) to resolve template.middleaearth.test
+you will observe the certificate is trusted, denoted by the locked padlock symbol in your browser:
 
 ![DNS](images/certificate_lock_dns_name.png)
 
 Furthermore, because the template script populates an IP address in the Subject Alternative Name (SAN)
 we have "trust" established when visiting the web URL via IP.  Note, it's atypical to deploy
-and IP in the SAN for public certificates, however, for internal/private networks it is at your
-discretion.  This was deployed to a Linux VM running NGINX.  Naturally, docker and/or apache 
-would also suffice for testing purposes.
+and IP in the SAN for public certificates, however, for internal/private networks this is your
+discretion.
 
 ![IP SAN](images/certificate_lock_ip_san.png)
 
