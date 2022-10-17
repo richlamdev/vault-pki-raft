@@ -48,10 +48,12 @@ Naturally this repo will work with other \*nix Operating Systems and/or Shells w
 
 ### Knowledge
 
-- Basic understanding of TLS certificates.  If knowledge is limited, then this 
-   platform is great to learn and play with TLS certificates and Certificate Authority (CA)
+- Basic understanding of TLS certificates.  If knowledge is limited; this
+  platform is great to learn and play with TLS certificates and Certificate Authority (CA)
 
 - Basic understanding of [HashiCorp Vault](https://www.vaultproject.io/).
+
+- Basic knowledge of Linux command line and BASH scripting.
 
 
 ## Quick Start
@@ -70,36 +72,44 @@ Steps:\
 The above will perform the following:\
 **1. Deploys a single Vault instance with a raft backend. - [raft.sh]**
 
-**2. Enable Vault PKI Engine / create a CA - [create_root_inter_certs.sh]**
+**2. Enables Vault PKI Engine and creates a CA - [create_root_inter_certs.sh]**
 
     a. Creates a root certificate and self sign the certificate.
        The root CA is designated by the variable ISSUER_NAME_CN.
-       By default the ISSUER_NAME_CN is "Lord of the Rings".  Change this value as you like.
+       By default the ISSUER_NAME_CN is "Lord of the Rings".
+       Change this value as you like.
 
-    b. Creates an intermediate certificate signing request, have the root authority sign
-       this certificate and store it within the CA.
+    b. Creates an intermediate certificate signing request, have the root 
+       authority sign this certificate and store it within the CA.
 
-    c. Creates a role designated by the variable VAULT_ROLE to sign leaf certificates.
-       Note the value of VAULT_ROLE, itself, is not critical.  However, the VAULT_ROLE value
-       must be the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.
-       This role name is referenced (used) to sign leaf certificates.  If they do not match, an error will occur.
-       Change this value if you like, just keep them consistent.
-       VAULT_ROLE is authorized to sign subdomains indicated by the variable DOMAIN, 
-       in this case the Second Level Domain (SLD) and Top Level Domain(TLD), the default value is
-       "middleearth.test".  Again, change this value as you like.
+    c. Creates a role designated by the variable VAULT_ROLE to sign leaf 
+       certificates.  Note the value of VAULT_ROLE, itself, is not critical.
+       However, the VAULT_ROLE value must be the same in both files, 
+       create_root_inter_certs.sh and issue_cert_template.sh.  This role name 
+       is referenced (used) to sign leaf certificates.  If they do not match, 
+       an error will occur. Change this value if you like, just keep them 
+       consistent.  VAULT_ROLE is authorized to sign subdomains indicated by
+       the variable DOMAIN, in this case the Second Level Domain (SLD) and 
+       Top Level Domain(TLD), the default value is "middleearth.test".  Again,
+       change this value as you like.
 
-    d. The self-signed CA root certificate and intermediate certificate chain are stored
-       in the directory as designated by the variable $ROOT_INTER_DIR.  The directory default
-       is "./root_inter_certs".  Import the root certificate from this folder to your
-       Operating System Trusted Store or Web Browser.  If you're unaware how to import the root certificate
-       to either, a quick google search will help you.
+    d. The self-signed CA root certificate and intermediate certificate chain
+       are stored in the directory as designated by the variable 
+       $ROOT_INTER_DIR.  The directory default is "./root_inter_certs".
+       Import the root certificate from this folder to your Operating System 
+       Trusted Store or Web Browser.  If you're unaware how to import the root
+       certificate to either, a quick google search will help you.
 
-**3. Issue a \"template\" certificate with a default Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]**
+**3. Issue a \"template\" certificate with a default Subject Common Name (CN)
+     template.middleearth.test - [issue_cert_template.sh]**
 
-    a. The resulting public certificate, key file, as well as entire signed json blob is stored in directory
-       designated by the variable SUBJECT_CN.  Edit the HOST and DOMAIN variables to change the default value of SUBJECT_CN.
-       Ensure the value of DOMAIN is the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.
-       In this example, the resulting certificate files will be stored in the directory ```template.middleearth.test```
+    a. The resulting public certificate, key file, as well as entire signed 
+       json blob is stored in directory designated by the variable SUBJECT_CN.
+       Edit the HOST and DOMAIN variables to change the default value of
+       SUBJECT_CN.  Ensure the value of DOMAIN is the same in both files,
+       create_root_inter_certs.sh and issue_cert_template.sh.  In this example,
+       the resulting certificate files will be stored in the directory 
+       ```template.middleearth.test```.
 
 <br/>
 
@@ -140,6 +150,9 @@ trusted store, then an error similar to this will appear:
 
 ![Certificate error](images/not_trusted_certificate_dns.png)
 <br/>
+
+
+## Creating your own leaf certificates
 
 
 
