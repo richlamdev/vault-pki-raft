@@ -60,14 +60,14 @@ Naturally this repo will work with other \*nix Operating Systems and/or Shells w
 
 Clone the Repo:\
 ```git clone https://github.com/richlamdev/vault-pki-raft.git```\
-```cd vault-pki-raft```\
+```cd vault-pki-raft```
 
 Steps:\
 ```./raft start```\
 ```./create_root_inter_certs.sh```\
 ```./issue_cert_template.sh```
 
-### Quick Start Explanation
+## Quick Start Explanation
 
 The above will perform the following:\
 **1. Deploys a single Vault instance with a raft backend. - [raft.sh]**
@@ -110,7 +110,6 @@ The above will perform the following:\
        create_root_inter_certs.sh and issue_cert_template.sh.  In this example,
        the resulting certificate files will be stored in the directory 
        ```template.middleearth.test```.
-
 <br/>
 
 Inspecting template.middleearth.test certificate via openssl command:
@@ -120,19 +119,18 @@ Inspecting template.middleearth.test certificate via openssl command:
 <br/>
 
 Optionally deploy the template certificate to a web server for inspection via
-web browser.  In the below examples I'm using Nginx in a Ubuntu Virtual Machine
-(VM).  Naturally, alternatives would achieve similar, such as Docker with 
-Apache or Nginx, Windows & IIS etc.  The certificate inpsected via Firefox 
+web browser.  The below is taken from Nginx in a Ubuntu Virtual Machine
+(VM).  Naturally, alternatives would achieve similar results, such as Docker 
+with Apache or Nginx, Windows & IIS etc.  The certificate inpsected via Firefox
 browser:
-
 ![Firefox2](images/firefox_certificate2.png)
 <br/>
 <br/>
 
 If you import the root certificate to your trusted store or browser update your
 local DNS (or update local /etc/hosts file) to resolve 
-template.middleaearth.test you will observe the certificate is trusted,
-denoted by the locked padlock symbol in your browser:
+template.middleaearth.test you will observe the certificate is trusted, denoted 
+by the locked padlock symbol in your browser:
 ![DNS](images/trusted_certificate_DNS.png)
 <br/>
 <br/>
@@ -141,16 +139,14 @@ Furthermore, because the template script populates an IP address in the Subject
 Alternative Name (SAN) we have "trust" established when visiting the web URL
 via IP.  Note, it's atypical to deploy and IP in the SAN for public
 certificates, however, for internal/private networks this is your discretion.
-
 ![IP SAN](images/trusted_certificate_SAN_IP.png)
 <br/>
 <br/>
 
-
 If the root certificate is _not_ imported to the Web browser or added to the 
 Operating System trusted store, then an error similar to this will appear:
-
 ![Certificate error](images/not_trusted_certificate_dns.png)
+<br/>
 <br/>
 
 
@@ -159,25 +155,37 @@ Operating System trusted store, then an error similar to this will appear:
 With minimal changes, custom leaf certificates can be generated with these
 scripts.
 
-**Subdomain:**
+**Subdomain:**\
 Edit HOST variable (aka subdomain) in issue_cert_template.sh.
 
-**Domain:**
+**Domain:**\
 Edit DOMAIN variable in create_root_inter_certs.sh and issue_cert_template.sh.
 
-**IP Address - Subject Alternative Name:**
+**IP Address - Subject Alternative Name:**\
 Edit IP_SAN1 variable in issue_cert_template.sh.
 Optionally omit this variable to remove a IP entry in the SAN.
 
 
 ----------------------OPTIONAL VARIABLES-----------------------------
 
-**Certificate Authority (Issuer):**
+**Certificate Authority (Issuer):**\
 Edit the ISSUER_NAME_CN variable in create_root_inter_certs.sh.
 
-**TTL:**
-Edit the TTL variabl (aka expiry) to adjust the validity period of the
-certificate in issue_cert_template.sh.
+**TTL:**\
+Edit the TTL variable (aka expiry) to adjust the validity period of the
+certificate in issue_cert_template.sh. This number is set in hours, per valid
+by Vault software.
+
+Presently the TTL is set for 9552 hours or 398 days.  Set to 398 days as per
+default expiry for public leaf certificates governed by major browser 
+manufacturers, Google, Apple, and Mozilla.  More often than not, many public 
+certificates have a one year maximum validity period. (sometimes less, in 
+the case of automated certifcate renewals, such as Let's Encrypt).  
+Naturally, in the case of development or private environment set the length to
+your desire.  Note that it cannot exceed the TTL of the root CA, which is
+default 10 years.  Refer to References section below for more information.
+
+
 
 
 
@@ -185,4 +193,5 @@ certificate in issue_cert_template.sh.
 [HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
 [HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)\
 [HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)\
-[smallstep PKI article](https://smallstep.com/blog/everything-pki/)
+[smallstep PKI article](https://smallstep.com/blog/everything-pki/)\
+[Mozilla Blog - Public Certificate Expiry](https://blog.mozilla.org/security/2020/07/09/reducing-tls-certificate-lifespans-to-398-days/)
