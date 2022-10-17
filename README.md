@@ -95,6 +95,7 @@ The above will perform the following:\
        to either, a quick google search will help you.
 
 **3. Issue a \"template\" certificate with a default Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]**
+
     a. The resulting public certificate, key file, as well as entire signed json blob is stored in directory
        designated by the variable SUBJECT_CN.  Edit the HOST and DOMAIN variables to change the default value of SUBJECT_CN.
        Ensure the value of DOMAIN is the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.
