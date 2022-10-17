@@ -119,43 +119,65 @@ Inspecting template.middleearth.test certificate via openssl command:
 <br/>
 <br/>
 
-Optionally deploy the template certificate to a web server for inspection via web browser.
-In the below examples I'm using Nginx in a Ubuntu Virtual Machine (VM).  Naturally, alternatives
-would achieve similar, such as Docker with Apache or Nginx, Windows & IIS etc.
-The certificate inpsected via Firefox browser:
+Optionally deploy the template certificate to a web server for inspection via
+web browser.  In the below examples I'm using Nginx in a Ubuntu Virtual Machine
+(VM).  Naturally, alternatives would achieve similar, such as Docker with 
+Apache or Nginx, Windows & IIS etc.  The certificate inpsected via Firefox 
+browser:
 
 ![Firefox2](images/firefox_certificate2.png)
 <br/>
 <br/>
 
-If you import the root certificate to your trusted store or browser update your local DNS 
-(or update local /etc/hosts file) to resolve template.middleaearth.test
-you will observe the certificate is trusted, denoted by the locked padlock symbol in your browser:
+If you import the root certificate to your trusted store or browser update your
+local DNS (or update local /etc/hosts file) to resolve 
+template.middleaearth.test you will observe the certificate is trusted,
+denoted by the locked padlock symbol in your browser:
 ![DNS](images/trusted_certificate_DNS.png)
 <br/>
 <br/>
 
-Furthermore, because the template script populates an IP address in the Subject Alternative Name (SAN)
-we have "trust" established when visiting the web URL via IP.  Note, it's atypical to deploy
-and IP in the SAN for public certificates, however, for internal/private networks this is your
-discretion.
+Furthermore, because the template script populates an IP address in the Subject
+Alternative Name (SAN) we have "trust" established when visiting the web URL
+via IP.  Note, it's atypical to deploy and IP in the SAN for public
+certificates, however, for internal/private networks this is your discretion.
 
 ![IP SAN](images/trusted_certificate_SAN_IP.png)
 <br/>
 <br/>
 
 
-If the root certificate is _not_ imported to the Web browser or added to the Operating System
-trusted store, then an error similar to this will appear:
+If the root certificate is _not_ imported to the Web browser or added to the 
+Operating System trusted store, then an error similar to this will appear:
 
 ![Certificate error](images/not_trusted_certificate_dns.png)
 <br/>
 
 
-## Creating your own leaf certificates
+## Creating custom leaf certificates
+
+With minimal changes, custom leaf certificates can be generated with these
+scripts.
+
+**Subdomain:**
+Edit HOST variable (aka subdomain) in issue_cert_template.sh.
+
+**Domain:**
+Edit DOMAIN variable in create_root_inter_certs.sh and issue_cert_template.sh.
+
+**IP Address - Subject Alternative Name:**
+Edit IP_SAN1 variable in issue_cert_template.sh.
+Optionally omit this variable to remove a IP entry in the SAN.
 
 
+----------------------OPTIONAL VARIABLES-----------------------------
 
+**Certificate Authority (Issuer):**
+Edit the ISSUER_NAME_CN variable in create_root_inter_certs.sh.
+
+**TTL:**
+Edit the TTL variabl (aka expiry) to adjust the validity period of the
+certificate in issue_cert_template.sh.
 
 
 
