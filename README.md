@@ -3,6 +3,7 @@
 * [Introduction](#introduction)
 * [Purpose](#purpose)
 * [Prerequisites](#prerequisites)
+   * [Operating System & Shell](#operating-system-&-shell)
    * [Knowledge](#knowledge)
    * [Software](#software)
 
