@@ -67,10 +67,10 @@ Steps:\
 
 ### Quick Start Explanation
 
-The above will perform the following:
-*1. Deploys a single Vault instance with a raft backend. - [raft.sh]*
+The above will perform the following:\
+**1. Deploys a single Vault instance with a raft backend. - [raft.sh]**
 
-*2. Enable Vault PKI Engine / create a CA - [create_root_inter_certs.sh]\*
+**2. Enable Vault PKI Engine / create a CA - [create_root_inter_certs.sh]\**
     a. Creates a root certificate and self sign the certificate.
        The root CA is designated by the variable ISSUER_NAME_CN.
        By default the ISSUER_NAME_CN is "Lord of the Rings".  Change this value as you like.\
@@ -93,7 +93,7 @@ The above will perform the following:
        Operating System Trusted Store or Web Browser.  If you're unaware how to import the root certificate
        to either, a quick google search will help you.
 
-*3. Issue a \"template\" certificate with a default Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]*
+**3. Issue a \"template\" certificate with a default Subject Common Name (CN) ```template.middleearth.test``` - [issue_cert_template.sh]**
     a. The resulting public certificate, key file, as well as entire signed json blob is stored in directory
        designated by the variable SUBJECT_CN.  Edit the HOST and DOMAIN variables to change the default value of SUBJECT_CN.
        Ensure the value of DOMAIN is the same in both files, create_root_inter_certs.sh and issue_cert_template.sh.
