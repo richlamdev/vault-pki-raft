@@ -70,7 +70,7 @@ Steps:\
 The above will perform the following:\
 **1. Deploys a single Vault instance with a raft backend. - [raft.sh]**
 
-**2. Enable Vault PKI Engine / create a CA - [create_root_inter_certs.sh]\**
+**2. Enable Vault PKI Engine / create a CA - [create_root_inter_certs.sh]**
     a. Creates a root certificate and self sign the certificate.
        The root CA is designated by the variable ISSUER_NAME_CN.
        By default the ISSUER_NAME_CN is "Lord of the Rings".  Change this value as you like.\
