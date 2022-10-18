@@ -3,7 +3,7 @@
 * [Introduction](#introduction)
 * [Purpose](#purpose)
 * [Prerequisites](#prerequisites)
-   * [Operating System & Shell](#operating-system-&-shell)
+   * [Operating System](#operating-system)
    * [Knowledge](#knowledge)
    * [Software](#software)
 
@@ -31,7 +31,7 @@ of HashiCorp raft backend infrastructure.
 
 ## Prerequisites
 
-### Operating System & Shell
+### Operating System
 
 - Developed on Ubuntu Linux 22.04 LTS.
 - Tested with Bash Shell
@@ -72,6 +72,11 @@ Steps:\
 
 The above will perform the following:\
 **1. Deploys a single Vault instance with a raft backend. - [raft.sh]**
+
+    a. This will unseal the vault and login in the current terminal as the root
+       user.
+
+    b. This will save the unseal key and root token in the current folder.
 
 **2. Enables Vault PKI Engine and creates a CA - [create_root_inter_certs.sh]**
 
@@ -168,7 +173,7 @@ Edit IP_SAN1 variable in issue_cert_template.sh.
 Optionally omit this variable to remove a IP entry in the SAN.
 
 
-----------------------OPTIONAL VARIABLES-----------------------------
+---OPTIONAL VARIABLES---
 
 **Certificate Authority (Issuer):**\
 Edit the ISSUER_NAME_CN variable in create_root_inter_certs.sh.
@@ -188,10 +193,45 @@ your desire.  Note that it cannot exceed the TTL of the root CA, which is
 default 10 years.  Refer to References section below for more information.
 
 
+## Save Vault state (save snapshot)
+
+To make a backup, or a snapshot of any certifcates (secrets) stored in Vault
+run the following command:
+```./raft save```
+
+This will save the state in the current folder under a folder named
+*backup_xxxx*.  Where xxxx is a random identifier generated.  The purpose
+of the unique identifier is to distinguish between multiple saved states.
+
+Each backup folder will contain three files:
+-the snapshot file itself, named snapshotxxxx
+-the unseal key, saved in the file named unseal_keyxxxx
+-the root token, saved in the file named root_tokenxxxx
+
+Note, when a snapshot is taken, the matching unseal key and root token
+must be used to access the vault after a snapshot is restored.  This is 
+eseentially completed transparently by this script.  Refer to below
+Restore section for more information.
+
+
+## Restore Vault state (restore snapshot)
+
+To restore a backup, or a snap of any previously saved state run the following
+command:\
+```./raft restore backup_xxxx```
 
 
 
-### References
+## Revocation
+
+
+## Improvements
+
+
+## Security Concerns
+
+
+## References
 [HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
 [HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)\
 [HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)\
