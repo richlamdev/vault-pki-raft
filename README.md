@@ -68,6 +68,14 @@ Steps:\
 ```./create_root_inter_certs.sh```\
 ```./issue_cert_template.sh```
 
+## Quick Start Explanation - short version
+
+1. Creates a Certificate Authority from a single Vault instance.
+2. Generates a signed leaf certificate, template.middleearth.test.
+   This certificate can be deployed to a web server.  Naturally,
+   this is just a demo, read below for instruction on how to
+   modify the output leaf certificate.
+
 ## Quick Start Explanation
 
 The above will perform the following:\
@@ -210,7 +218,7 @@ Each backup folder will contain three files:
 
 Note, when a snapshot is taken, the matching unseal key and root token
 must be used to access the vault after a snapshot is restored.  This is 
-eseentially completed transparently by this script.  Refer to below
+performed transparently by this script.  Refer to below
 Restore section for more information.
 
 
@@ -229,6 +237,12 @@ command:\
 
 
 ## Security Concerns
+
+
+## Style Convention
+
+
+## Why the name raft.sh?
 
 
 ## References
