@@ -126,8 +126,8 @@ The above will perform the following:\
        json blob is stored in directory designated by the variable SUBJECT_CN.
        Edit the HOST and DOMAIN variables to change the default value of
        SUBJECT_CN.  Ensure the value of DOMAIN is the same in both files,
-       create_root_inter_certs.sh and issue_cert_template.sh.  In this example,
-       the resulting certificate files will be stored in the directory
+       _create_root_inter_certs.sh_ and _issue_cert_template.sh_.  In this 
+       example, the resulting certificate files will be stored in the directory
        _template.middleearth.test_.
 <br/>
 
@@ -216,15 +216,15 @@ This will save the state in the current folder under a folder named
 *backup_xxxx*.  Where xxxx is a random identifier generated.  The purpose
 of the unique identifier is to distinguish between multiple saved states.
 
-Each backup folder will contain three files:
--the snapshot file itself, named _snapshotxxxx_
--the unseal key, saved in the file named _unseal_keyxxxx_
--the root token, saved in the file named _root_tokenxxxx_
+Each backup folder will contain three files:\
+-the snapshot file itself, named _snapshotxxxx_\
+-the unseal key, saved in the file named _unseal_keyxxxx_\
+-the root token, saved in the file named _root_tokenxxxx_\
 
-Note, when a snapshot is taken, the matching unseal key and root token
-must be used to access the vault after a snapshot is restored.  This is 
-performed transparently by this script.  Refer to below
-Restore section for more information.
+Note, when a snapshot is taken, the current (matching) unseal key and root
+token must be used to access the vault after a snapshot is restored.  This is
+performed transparently by this script.  Refer to below Restore section for
+more information.
 
 
 ## Restore Vault state (restore snapshot)
