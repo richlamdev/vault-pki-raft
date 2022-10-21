@@ -83,7 +83,7 @@ Steps:\
 ## Quick Start Explanation - long version
 
 The above will perform the following:\
-**1. Deploys a single Vault instance with a raft backend. - [raft.sh]**
+1. Deploys a single Vault instance with a raft backend. - [raft.sh]
 
     a. This will unseal the vault and login in the current terminal (user)
        as the root user.
@@ -91,7 +91,7 @@ The above will perform the following:\
     b. This will save the unseal key in the file _unseal_key_ and root
        token in the file _root_token_ in the current folder.
 
-**2. Enables Vault PKI Engine and creates a CA - [create_root_inter_certs.sh]**
+2. Enables Vault PKI Engine and creates a CA - [create_root_inter_certs.sh]
 
     a. Creates a root certificate and self sign the certificate.
        The root CA is designated by the variable ISSUER_NAME_CN.
@@ -119,8 +119,8 @@ The above will perform the following:\
        Trusted Store or Web Browser.  If you're unaware how to import the root
        certificate to either, a quick google search will help you.
 
-**3. Issues a \"template\" certificate with a default Subject Common Name (CN)
-     template.middleearth.test - [issue_cert_template.sh]**
+3. Issues a \"template\" certificate with a default Subject Common Name (CN)
+     template.middleearth.test - [issue_cert_template.sh]
 
     a. The resulting public certificate, key file, as well as entire signed 
        json blob is stored in directory designated by the variable SUBJECT_CN.
