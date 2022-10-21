@@ -209,7 +209,7 @@ default 10 years.  Refer to References section below for more information.
 ## Save Vault state (save snapshot)
 
 To make a backup, or a snapshot of any certifcates (secrets) stored in Vault
-run the following command:
+run the following command:\
 ```./raft save```
 
 This will save the state in the current folder under a folder named
@@ -221,8 +221,8 @@ Each backup folder will contain three files:\
 -the unseal key, saved in the file named _unseal_keyxxxx_\
 -the root token, saved in the file named _root_tokenxxxx_\
 
-Note, when a snapshot is taken, the current (matching) unseal key and root
-token must be used to access the vault after a snapshot is restored.  This is
+Note, when a snapshot is taken, the matching unseal key and root
+token must be used to access the vault when a snapshot is restored.  This is
 performed transparently by this script.  Refer to below Restore section for
 more information.
 
@@ -233,6 +233,11 @@ To restore a backup, or a snap of any previously saved state run the following
 command:\
 ```./raft restore backup_xxxx```
 
+This will unseal the vault and login in the current terminal (user) as the
+root user with the associated backup unseal key and root token.
+
+Any previously generated certificates or other stored data within the Vault
+will be restored.
 
 
 ## Revocation
