@@ -64,7 +64,7 @@ Clone the Repo:\
 ```cd vault-pki-raft```
 
 Steps:\
-```./raft start```\
+```./raft.sh start```\
 ```./create_root_inter_certs.sh```\
 ```./issue_cert_template.sh```
 
@@ -212,7 +212,7 @@ default 10 years.  Refer to References section below for more information.
 
 To make a backup, or a snapshot of any certifcates (secrets) stored in Vault
 run the following command:\
-```./raft save```
+```./raft.sh save```
 
 This will save the state in the current folder under a folder named
 *backup_xxxx*.  Where xxxx is a random identifier generated.  The purpose
@@ -232,7 +232,7 @@ more information.
 
 To restore a backup, or a snap of any previously saved state run the following
 command:\
-```./raft restore backup_xxxx```
+```./raft.sh restore backup_xxxx```
 
 This will unseal the vault and login in the current terminal (user) as the
 root user with the associated backup unseal key and root token.
@@ -243,7 +243,7 @@ will be restored.
 ### Stop Vault server
 
 To stop the Vault server process, run the following command:\
-```./raft stop```
+```./raft.sh stop```
 
 This will stop the current Vault service, remove the storage folder, and
 delete the associated unseal key and root token.
@@ -254,9 +254,9 @@ the command before stopping the sessions.  Refer to Save Vault state section.
 ### Clean up Vault
 
 To clean up all certificates and backup folders, run the following command:\
-```./raft cleanup```
+```./raft.sh cleanup```
 
-In addition to executing ```./raft stop```, cleanup will also remove the root
+In addition to executing ```./raft.sh stop```, cleanup will also remove the root
 and intermediate certificates, all domain certificates created and the all
 backup folders.
 
