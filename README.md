@@ -206,7 +206,9 @@ your desire.  Note that it cannot exceed the TTL of the root CA, which is
 default 10 years.  Refer to References section below for more information.
 
 
-## Save Vault state (save snapshot)
+## Commands
+
+### Save Vault state (save snapshot)
 
 To make a backup, or a snapshot of any certifcates (secrets) stored in Vault
 run the following command:\
@@ -221,13 +223,12 @@ Each backup folder will contain three files:\
 -the unseal key, saved in the file named _unseal_keyxxxx_\
 -the root token, saved in the file named _root_tokenxxxx_\
 
-Note, when a snapshot is taken, the matching unseal key and root
+When a snapshot is taken, the matching unseal key and root
 token must be used to access the vault when a snapshot is restored.  This is
 performed transparently by this script.  Refer to below Restore section for
 more information.
 
-
-## Restore Vault state (restore snapshot)
+### Restore Vault state (restore snapshot)
 
 To restore a backup, or a snap of any previously saved state run the following
 command:\
@@ -238,6 +239,46 @@ root user with the associated backup unseal key and root token.
 
 Any previously generated certificates or other stored data within the Vault
 will be restored.
+
+### Stop Vault server
+
+To stop the Vault server process, run the following command:\
+```./raft stop```
+
+This will stop the current Vault service, remove the storage folder, and
+delete the associated unseal key and root token.
+
+If there is data (secrets) to be kept with the working Vault session, run
+the command before stopping the sessions.  Refer to Save Vault state section.
+
+### Clean up Vault
+
+To clean up all certificates and backup folders, run the following command:\
+```./raft cleanup```
+
+In addition to executing ```./raft stop```, cleanup will also remove the root
+and intermediate certificates, all domain certificates created and the all
+backup folders.
+
+Naturally this command is quite destructive and is essentially used to sanitize
+the working folder.
+
+
+### Store and retrieve secrets (non PKI engine)
+
+A couple miscellaneous functions have been left in _raft.sh_ as random
+functions to demonstrate basic secret storage and retrieval within Vault.
+Though these functions are irrelevant to PKI, these remain in this script as
+basic examples.
+
+To enable a secrets engine named kv and store a value at kv/apikey with
+hardcoded example data _webapp=AAABBB238472320238CCC_, run the command:
+
+```./raft.sh putdata```
+
+To retrieve and display the above stored data run the following command:
+
+```./raft.sh getdata```
 
 
 ## Revocation
