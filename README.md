@@ -312,6 +312,23 @@ to the [HashiCorp documentation](https://developer.hashicorp.com/vault/docs/conf
 
 
 ## Security Concerns
+This is not meant for a production environment for the following reasons:
+1.  This deployment is a single instance.  Naturally this is not a reslient
+deployment.
+2.  It is configured with a single seal token.  Typically, five tokens are
+created and a requires a minimum of three tokens to unseal.
+3.  The unseal token is exported/displayed in plain-text.  A preferred practice
+would be to export and encrypt the token with a public PGP key of the person(s)
+responsible for maintenance.
+4.  The root token is writen to disk.  For a typical deployment, according to
+Hashicorp best practices, would be to [destroy the root token](https://developer.hashicorp.com/vault/docs/concepts/tokens#root-tokens)
+after the root token has been utlized to setup Vault.
+5.  The secret certificate (key) for generated certificates are written to the 
+local disk.  The primary purpose is to have all the generated certificates 
+readily available to inspect for learning purposes.  Naturally storing secret
+certificates (keys) must be handled as secrets.  Naturally compromised secret
+certifcates compromises trust and defeats the whole purpose of a Public Key
+Infrastructure(PKI)!
 
 
 ## Style Convention
