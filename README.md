@@ -282,9 +282,24 @@ To retrieve and display the above stored data run the following command:
 
 
 ## Revocation
+If this repo / deployment is used as an ephemeral instance, revocation
+will not work without alternative configuration.  Web browsers or clients
+need to verify validity of certificates against a CRL or OCSP.
+
+An alternative to verifying certificate validity against a CRL or OCSP would be
+to set short certificate expiry (aka Time-To-Live (TTL))
+
+For further information regarding certificate revocation, refer to the links
+in the Reference section.
+
+
+## Vault Configuration
 
 
 ## Improvements
+
+1. Create a bash script to accept configuration parameters as command line
+arguments instead of editing the script directly.
 
 
 ## Security Concerns
