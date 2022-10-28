@@ -89,7 +89,10 @@ The above will perform the following:\
        as the root user.
 
     b. This will save the unseal key in the file _unseal_key_ and root
-       token in the file _root_token_ in the current folder.
+       token in the file _root_token_ in the current folder.  Naturally, this
+       not the most secure method to save the _unseal_key_ and _root_token_.
+       Actually, a single _unseal_key_ is not the best method for provisioning.
+       See Security Concerns section for more information.
 
 2. Enables Vault PKI Engine and creates a CA - [create_root_inter_certs.sh]
 
@@ -283,23 +286,29 @@ To retrieve and display the above stored data run the following command:
 
 ## Revocation
 If this repo / deployment is used as an ephemeral instance, revocation
-will not work without alternative configuration.  Web browsers or clients
-need to verify validity of certificates against a CRL or OCSP.
+will not work without alternative configuration/additional servers.  Web 
+browsers or clients need to verify validity of certificates against a
+Certificate Revocation List (CRL) or via a Online Certificate Status Protocol 
+(OCSP) server.
+
+If this repo is only used for learning/development, revocation is moot.  If
+this is to be used for a personal home network, then you can determine your
+risk tolerance and/or alternatives for maintaining certificate revocation and/
+or expiry.
 
 An alternative to verifying certificate validity against a CRL or OCSP would be
-to set short certificate expiry (aka Time-To-Live (TTL))
+to set short certificate expiry (aka Time-To-Live (TTL)).  Doing so would
+require new certificates to be issued frequently, and likely in an automated
+fashion.
 
 For further information regarding certificate revocation, refer to the links
 in the Reference section.
 
 
 ## Vault Configuration
-
-
-## Improvements
-
-1. Create a bash script to accept configuration parameters as command line
-arguments instead of editing the script directly.
+The file _vault_config.hcl_ is the configuration file for the Vault server.
+The configuration is fairly straight forward, for more information please refer
+to the [HashiCorp documentation](https://developer.hashicorp.com/vault/docs/configuration).
 
 
 ## Security Concerns
@@ -310,6 +319,11 @@ arguments instead of editing the script directly.
 
 ## Why the name raft.sh?
 
+
+## Improvements
+
+1. Create a bash script to accept configuration parameters as command line
+arguments instead of editing the script directly.
 
 ## References
 [HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
