@@ -66,8 +66,8 @@ token to login to Vault. (either CLI and/or GUI)
 ## Quick Start
 
 Clone the Repo:\
-```git clone https://github.com/richlamdev/vault-pki-raft.git```\
-```cd vault-pki-raft```
+```git clone https://github.com/richlamdev/vault-pki-raft.git
+cd vault-pki-raft```
 
 Steps:\
 ```./raft.sh start```\
@@ -266,20 +266,20 @@ the command before stopping the sessions.  Refer to Save Vault state section.
 To clean up all certificates and backup folders, run the following command:\
 ```./raft.sh cleanup```
 
-In addition to executing ```./raft.sh stop```, cleanup will also remove the root
-and intermediate certificates, all domain certificates created and the all
+In addition to executing ```./raft.sh stop```, cleanup will also remove the 
+root and intermediate certificates, all domain certificates created and the all
 backup folders.
 
-Naturally this command is destructive and is primarily used to sanitize the 
+This command is destructive and is primarily used to sanitize the 
 working folder.
 
 
-### Store and retrieve secrets (non PKI engine)
+### Store and retrieve secrets (non PKI)
 
 A couple miscellaneous functions have been left in _raft.sh_ as random
 functions to demonstrate basic secret storage and retrieval within Vault.
-Though these functions are irrelevant to PKI, these remain in this script as
-basic examples.
+These functions are irrelevant to PKI, arguably do not belong here,
+however they remain in this script as basic examples.
 
 To enable a secrets engine named kv and store a value at kv/apikey with
 hardcoded example data _webapp=AAABBB238472320238CCC_, run the command:
@@ -292,10 +292,11 @@ To retrieve and display the above stored data run the following command:
 
 
 ## Revocation
+
 If this repo / deployment is used as an ephemeral instance, revocation
-will not work without alternative configuration/additional servers.  Web 
+will not work without alternative configuration/additional servers.  Web
 browsers or clients need to verify validity of certificates against a
-Certificate Revocation List (CRL) or via a Online Certificate Status Protocol 
+Certificate Revocation List (CRL) or via a Online Certificate Status Protocol
 (OCSP) server.
 
 If this repo is only used for learning/development, revocation is moot.  If
@@ -305,14 +306,16 @@ or expiry.
 
 An alternative to verifying certificate validity against a CRL or OCSP would be
 to set short certificate expiry (aka Time-To-Live (TTL)).  Doing so would
-require new certificates to be issued frequently, and likely in an automated
-fashion.
+require new certificates to be issued frequently, and preferably in an 
+automated fashion.  This would also require a Vault instance to deployed
+permanently...
 
 For further information regarding certificate revocation, refer to the links
 in the Reference section.
 
 
 ## Vault Configuration
+
 The file _vault_config.hcl_ is the configuration file for the Vault server.
 The configuration is fairly straight forward, for more information please refer
 to the [HashiCorp documentation](https://developer.hashicorp.com/vault/docs/configuration).
@@ -320,11 +323,10 @@ to the [HashiCorp documentation](https://developer.hashicorp.com/vault/docs/conf
 
 ## Security Concerns
 
-This is not meant for a production environment for several reasons.  Some brief
-points below why:
+This is *not* meant for a production environment for several reasons.  Some
+brief points below why:
 
-1.  This deployment is a single instance.  Naturally this is not a reslient
-deployment.
+1.  This deployment is a single instance.  This is not a reslient deployment.
 
 2.  Vault is configured with a single seal token.  Typically, five tokens are
 created and a requires a minimum of three tokens to unseal.
@@ -337,11 +339,12 @@ responsible for maintenance.
 Hashicorp best practices, would be to [destroy the root token](https://developer.hashicorp.com/vault/docs/concepts/tokens#root-tokens)
 after the root token has been utlized to setup Vault.
 
-5.  The secret certificate (key) for generated certificates are written to the 
-local disk.  The primary purpose is to have all generated certificates
+5.  The secret certificate (key) for generated certificates are written to the
+local disk.  The intenion here was to have all generated certificates
 readily available to inspect for learning purposes.  Naturally storing secret
-certificates (keys) should be stored securely.  Exposed secret certificates 
-compromises trust and defeats the purpose of a Public Key Infrastructure(PKI)!
+certificates (keys) should be stored securely.  Exposed secret certificates
+compromises secrecy/trust and defeats the purpose of a Public Key
+Infrastructure(PKI)!
 
 
 ## Style Convention
@@ -353,7 +356,7 @@ Style Guide](https://google.github.io/styleguide/shellguide.html)
 ## Why the name _raft.sh_?
 The reason the Vault script is name _raft.sh_ is for convenience of execution.
 Start to type ```./r``` followed by ```tab``` to autocomplete ```./raft.sh```
-then followed by the subcommand to execute the desired command.
+followed by the subcommand to execute the desired command.
 
 
 ## Improvements
@@ -361,7 +364,9 @@ then followed by the subcommand to execute the desired command.
 - Create a bash script to accept configuration parameters as command line
 arguments instead of editing the script directly.
 
+
 ## References
+
 [HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
 [HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)\
 [HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)\
