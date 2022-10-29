@@ -14,19 +14,22 @@ This repo demonstrates [HashiCorp's Vault](https://www.hashicorp.com/products/va
 product as a Certificate Authority (CA) for Public Key Infrastructure (PKI).
 This demo utilizes a raft as a [storage backend](https://www.vaultproject.io/docs/configuration/storage) 
 as opposed to a file backend which is typical in many demos/tutorials.
-Deploying Vault with raft backend allows for simple backup and recovery of data via
-built-in commands.  While there are other features with a raft deployment, convienent 
-backup and restoration were significant factors for using raft as a backend.  Technically,
-raft is a [consensous algorithm](https://raft.github.io/), but I digress...
+Deploying Vault with raft backend allows for simple backup and recovery of data
+via built-in commands.  While there are other features with a raft deployment, 
+convienent backup and restoration were significant factors for using raft as a 
+backend.  Technically, raft is a [consensous algorithm](https://raft.github.io/),
+but that is a digression.
 
 
 ## Purpose
 
-The primary purpose is to provide a development/test environment to learn PKI with HashiCorp Vault.
+The primary purpose is to provide a development/test environment to learn PKI
+with HashiCorp Vault.
 
-This repo (platform) could potentially be used for personal/private networks, if you accept
-the shortcomings.  The limitations are the lack comprehensive features and proper deployment
-of HashiCorp raft backend infrastructure.
+This repo (platform) could potentially be used for personal/private networks,
+if you accept the shortcomings.  The limitations are the lack comprehensive
+features, security best practices and proper deployment of HashiCorp
+raft backend infrastructure.
 
 
 ## Prerequisites
@@ -36,7 +39,8 @@ of HashiCorp raft backend infrastructure.
 - Developed on Ubuntu Linux 22.04 LTS.
 - Tested with Bash Shell
 
-Naturally this repo will work with other \*nix Operating Systems and/or Shells with modification.
+Naturally this repo will work with other \*nix Operating Systems and/or Shells
+with modification.
 
 ### Software
 
@@ -44,13 +48,15 @@ Naturally this repo will work with other \*nix Operating Systems and/or Shells w
 - [Jq](https://stedolan.github.io/jq/download/)
 - [OpenSSL](https://wiki.openssl.org/index.php/Binaries)
 
-### Optional, but preferred - this enables convenient copy and paste of root token to login to Vault. (either CLI and/or GUI)
+### Optional, but preferred - this enables convenient copy and paste of root
+token to login to Vault. (either CLI and/or GUI)
 - [xclip](https://github.com/astrand/xclip)
 
 ### Knowledge
 
 - Basic understanding of TLS certificates.  If knowledge is limited; this
-  platform is great to learn and play with TLS certificates and Certificate Authority (CA)
+  platform is great to learn and play with TLS certificates and 
+  Certificate Authority (CA)
 
 - Basic understanding of [HashiCorp Vault](https://www.vaultproject.io/).
 
@@ -182,7 +188,8 @@ scripts.
 Edit HOST variable (aka subdomain) in _issue_cert_template.sh_.
 
 **Domain:**\
-Edit DOMAIN variable in _create_root_inter_certs.sh_ and _issue_cert_template.sh_.
+Edit DOMAIN variable in _create_root_inter_certs.sh_ and
+_issue_cert_template.sh_.
 
 **IP Address - Subject Alternative Name:**\
 Edit IP_SAN1 variable in _issue_cert_template.sh_.
@@ -263,8 +270,8 @@ In addition to executing ```./raft.sh stop```, cleanup will also remove the root
 and intermediate certificates, all domain certificates created and the all
 backup folders.
 
-Naturally this command is quite destructive and is essentially used to sanitize
-the working folder.
+Naturally this command is destructive and is primarily used to sanitize the 
+working folder.
 
 
 ### Store and retrieve secrets (non PKI engine)
@@ -312,34 +319,46 @@ to the [HashiCorp documentation](https://developer.hashicorp.com/vault/docs/conf
 
 
 ## Security Concerns
-This is not meant for a production environment for the following reasons:
+
+This is not meant for a production environment for several reasons.  Some brief
+points below why:
+
 1.  This deployment is a single instance.  Naturally this is not a reslient
 deployment.
-2.  It is configured with a single seal token.  Typically, five tokens are
+
+2.  Vault is configured with a single seal token.  Typically, five tokens are
 created and a requires a minimum of three tokens to unseal.
-3.  The unseal token is exported/displayed in plain-text.  A preferred practice
+
+3.  The unseal token is exported/displayed in plain-text.  A preferred method
 would be to export and encrypt the token with a public PGP key of the person(s)
 responsible for maintenance.
+
 4.  The root token is writen to disk.  For a typical deployment, according to
 Hashicorp best practices, would be to [destroy the root token](https://developer.hashicorp.com/vault/docs/concepts/tokens#root-tokens)
 after the root token has been utlized to setup Vault.
+
 5.  The secret certificate (key) for generated certificates are written to the 
-local disk.  The primary purpose is to have all the generated certificates 
+local disk.  The primary purpose is to have all generated certificates
 readily available to inspect for learning purposes.  Naturally storing secret
-certificates (keys) must be handled as secrets.  Naturally compromised secret
-certifcates compromises trust and defeats the whole purpose of a Public Key
-Infrastructure(PKI)!
+certificates (keys) should be stored securely.  Exposed secret certificates 
+compromises trust and defeats the purpose of a Public Key Infrastructure(PKI)!
 
 
 ## Style Convention
 
+The Bash scripts were written to adhere as close as possible to [Google's Shell
+Style Guide](https://google.github.io/styleguide/shellguide.html)
 
-## Why the name raft.sh?
+
+## Why the name _raft.sh_?
+The reason the Vault script is name _raft.sh_ is for convenience of execution.
+Start to type ```./r``` followed by ```tab``` to autocomplete ```./raft.sh```
+then followed by the subcommand to execute the desired command.
 
 
 ## Improvements
 
-1. Create a bash script to accept configuration parameters as command line
+- Create a bash script to accept configuration parameters as command line
 arguments instead of editing the script directly.
 
 ## References
