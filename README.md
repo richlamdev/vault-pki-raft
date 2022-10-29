@@ -66,8 +66,9 @@ token to login to Vault. (either CLI and/or GUI)
 ## Quick Start
 
 Clone the Repo:\
-```git clone https://github.com/richlamdev/vault-pki-raft.git
-cd vault-pki-raft```
+
+```git clone https://github.com/richlamdev/vault-pki-raft.git```\
+```cd vault-pki-raft```
 
 Steps:\
 ```./raft.sh start```\
