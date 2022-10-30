@@ -22,10 +22,9 @@
   * [Vault Configuration](#vault-configuration)
   * [Security Concerns](#security-concerns)
   * [Style Convention](#style-convention)
-  * [Why the name _raft.sh_?](#why-the-name--raftsh--)
+  * [Why the name raft.sh?](#why-the-name-raftsh-)
   * [Improvements](#improvements)
   * [References](#references)
-
 
 
 ## Introduction
@@ -374,7 +373,7 @@ The Bash scripts were written to adhere as close as possible to [Google's Shell
 Style Guide](https://google.github.io/styleguide/shellguide.html)
 
 
-## Why the name _raft.sh_?
+## Why the name raft.sh?
 The reason the Vault script is name _raft.sh_ is for convenience of execution.
 Start to type ```./r``` followed by ```tab``` to autocomplete ```./raft.sh```
 followed by the subcommand to execute the desired command.
