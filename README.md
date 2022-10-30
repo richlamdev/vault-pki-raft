@@ -1,11 +1,31 @@
 # HashiCorp Vault PKI with Raft backend
 
-* [Introduction](#introduction)
-* [Purpose](#purpose)
-* [Prerequisites](#prerequisites)
-   * [Operating System](#operating-system)
-   * [Knowledge](#knowledge)
-   * [Software](#software)
+- [HashiCorp Vault PKI with Raft backend](#hashicorp-vault-pki-with-raft-backend)
+  * [Introduction](#introduction)
+  * [Purpose](#purpose)
+  * [Prerequisites](#prerequisites)
+    + [Operating System](#operating-system)
+    + [Software](#software)
+    + [Optional, but preferred - this enables convenient copy and paste of root](#optional--but-preferred---this-enables-convenient-copy-and-paste-of-root)
+    + [Knowledge](#knowledge)
+  * [Quick Start](#quick-start)
+  * [Quick Start Explanation - short version](#quick-start-explanation---short-version)
+  * [Quick Start Explanation - long version](#quick-start-explanation---long-version)
+  * [Creating custom leaf certificates](#creating-custom-leaf-certificates)
+  * [Commands](#commands)
+    + [Save Vault state (save snapshot)](#save-vault-state--save-snapshot-)
+    + [Restore Vault state (restore snapshot)](#restore-vault-state--restore-snapshot-)
+    + [Stop Vault server](#stop-vault-server)
+    + [Clean up Vault](#clean-up-vault)
+    + [Store and retrieve secrets (non PKI)](#store-and-retrieve-secrets--non-pki-)
+  * [Revocation](#revocation)
+  * [Vault Configuration](#vault-configuration)
+  * [Security Concerns](#security-concerns)
+  * [Style Convention](#style-convention)
+  * [Why the name _raft.sh_?](#why-the-name--raftsh--)
+  * [Improvements](#improvements)
+  * [References](#references)
+
 
 
 ## Introduction
