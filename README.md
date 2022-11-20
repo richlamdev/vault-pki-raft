@@ -401,7 +401,7 @@ arguments instead of editing the script directly.
 
 ## References
 
-[HashiCorp Build Your Own Certificate Authority](https://fortune.com/education/business/articles/2022/10/20/the-cybersecurity-industry-is-short-3-4-million-workers-thats-good-news-for-cyber-wages/)\
+[HashiCorp Build Your Own Certificate Authority](https://developer.hashicorp.com/vault/tutorials/secrets-management/pki-engine)\
 [HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
 [HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)\
 [HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)\
