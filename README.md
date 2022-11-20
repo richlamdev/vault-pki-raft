@@ -6,7 +6,7 @@
   * [Prerequisites](#prerequisites)
     + [Operating System](#operating-system)
     + [Software](#software)
-    + [Optional (preferred)](#optional--preferred-)
+    + [Optional](#optional)
     + [Knowledge](#knowledge)
   * [Quick Start](#quick-start)
   * [Quick Start Explanation - short version](#quick-start-explanation---short-version)
@@ -70,7 +70,7 @@ with modification.
 - [Jq](https://stedolan.github.io/jq/download/)
 - [OpenSSL](https://wiki.openssl.org/index.php/Binaries)
 
-### Optional (preferred)
+### Optional
 *This enables convenient copy and paste of root token to login to Vault. (either CLI and/or GUI)*
 
 - [xclip](https://github.com/astrand/xclip)
