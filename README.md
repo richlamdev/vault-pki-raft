@@ -6,7 +6,7 @@
   * [Prerequisites](#prerequisites)
     + [Operating System](#operating-system)
     + [Software](#software)
-    + [Optional, but preferred - this enables convenient copy and paste of root](#optional--but-preferred---this-enables-convenient-copy-and-paste-of-root)
+    + [Optional (preferred)](#optional--preferred-)
     + [Knowledge](#knowledge)
   * [Quick Start](#quick-start)
   * [Quick Start Explanation - short version](#quick-start-explanation---short-version)
@@ -71,7 +71,7 @@ with modification.
 - [OpenSSL](https://wiki.openssl.org/index.php/Binaries)
 
 ### Optional (preferred)
-*this enables convenient copy and paste of root token to login to Vault. (either CLI and/or GUI)**
+*This enables convenient copy and paste of root token to login to Vault. (either CLI and/or GUI)*
 
 - [xclip](https://github.com/astrand/xclip)
 
