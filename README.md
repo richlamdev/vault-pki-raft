@@ -70,8 +70,9 @@ with modification.
 - [Jq](https://stedolan.github.io/jq/download/)
 - [OpenSSL](https://wiki.openssl.org/index.php/Binaries)
 
-### Optional, but preferred - this enables convenient copy and paste of root
-### token to login to Vault. (either CLI and/or GUI)
+### Optional (preferred)
+*this enables convenient copy and paste of root token to login to Vault. (either CLI and/or GUI)**
+
 - [xclip](https://github.com/astrand/xclip)
 
 ### Knowledge
