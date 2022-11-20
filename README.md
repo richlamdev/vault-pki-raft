@@ -126,7 +126,7 @@ The above will perform the following:\
        Actually, a single _unseal_key_ is not the best method for provisioning.
        See Security Concerns section for more information.
 
-    e. After this is complete, the root token is saved to the system buffer.
+    c. After this is complete, the root token is saved to the system buffer.
        This enables convenient login to the vault GUI console.  Visit
        `http://127.0.0.1:8200/` via your browser.  Choose Token method to login
        and paste the root token in the Token field to login.  This step is
@@ -401,6 +401,7 @@ arguments instead of editing the script directly.
 
 ## References
 
+[HashiCorp Build Your Own Certificate Authority](https://fortune.com/education/business/articles/2022/10/20/the-cybersecurity-industry-is-short-3-4-million-workers-thats-good-news-for-cyber-wages/)\
 [HashiCorp Storage Backend](https://www.vaultproject.io/docs/configuration/storage)\
 [HashiCorp Vault Backup](https://learn.hashicorp.com/tutorials/vault/sop-backup)\
 [HashiCorp Vault Restore](https://learn.hashicorp.com/tutorials/vault/sop-restore)\
