@@ -190,8 +190,9 @@ browser:
 
 If you import the root certificate to your trusted store or browser update your
 local DNS (or update local /etc/hosts file) to resolve 
-template.middleaearth.test you will observe the certificate is trusted, denoted 
+template.middleaearth.test you will observe the certificate is trusted, denoted
 by the locked padlock symbol in your browser:
+
 ![DNS](images/trusted_certificate_DNS.png)
 <br/>
 <br/>
