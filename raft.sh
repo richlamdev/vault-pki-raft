@@ -97,6 +97,7 @@ function start_vault {
     ""\
     "Use ctrl-v to paste"\
     "Use(paste) token at ${ADDRESS} via web browser, to login to vault GUI"\
+    ""\
     ""
 }
 
