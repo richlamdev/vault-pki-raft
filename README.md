@@ -128,7 +128,9 @@ The above will perform the following:\
     e. After this is complete, the root token is saved to the system buffer.
        This enables convenient login to the vault GUI console.  Visit
        `http://127.0.0.1:8200/` via your browser.  Choose Token method to login
-       and paste the root token in the Token field.
+       and paste the root token in the Token field to login.  This step is
+       optional, naturally the GUI provides a convenient way to explore
+       the certificates and/or actions as resuilt of the CLI commands.
 
 2. Enables Vault PKI Engine and creates a CA - [create_root_inter_certs.sh]
 
