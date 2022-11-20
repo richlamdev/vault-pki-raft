@@ -31,11 +31,15 @@
 
 This repo demonstrates [HashiCorp's Vault](https://www.hashicorp.com/products/vault)
 product as a Certificate Authority (CA) for Public Key Infrastructure (PKI).
+
+Following the Quick Start below, you're able to quickly genearate self-signed
+certificates for learning or deployment in test environments.
+
 This demo utilizes a raft as a [storage backend](https://www.vaultproject.io/docs/configuration/storage) 
 as opposed to a file backend which is typical in many demos/tutorials.
 Deploying Vault with raft backend allows for simple backup and recovery of data
-via built-in commands.  While there are other features with a raft deployment, 
-convienent backup and restoration were significant factors for using raft as a 
+via built-in commands.  While there are other features with a raft deployment,
+convienent backup and restoration were significant factors for using raft as a
 backend.  Technically, raft is a [consensous algorithm](https://raft.github.io/),
 but that is a digression.
 
@@ -357,8 +361,7 @@ to the [HashiCorp documentation](https://developer.hashicorp.com/vault/docs/conf
 
 ## Security Concerns
 
-This is *not* meant for a production environment for several reasons.  Some
-brief points below why:
+This is *not* meant for a production environment for several reasons.
 
 1.  This deployment is a single instance.  This is not a reslient deployment.
 
