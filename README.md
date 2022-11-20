@@ -88,7 +88,7 @@ with modification.
 
 ## Quick Start
 
-Clone the Repo:\
+Clone the Repo:
 
 ```git clone https://github.com/richlamdev/vault-pki-raft.git```\
 ```cd vault-pki-raft```
