@@ -199,7 +199,7 @@ by the locked padlock symbol in your browser:
 
 Furthermore, because the template script populates an IP address in the Subject
 Alternative Name (SAN) we have "trust" established when visiting the web URL
-via IP.  Note, it's atypical to deploy and IP in the SAN for public
+via IP.  Note, it's atypical to add an IP in the SAN for public
 certificates, however, for internal/private networks this is your discretion.
 
 ![IP SAN](images/trusted_certificate_SAN_IP.png)
