@@ -118,7 +118,7 @@ Steps:\
 
 ## Quick Start Explanation - long version
 
-The above will perform the following:\
+The above will perform the following:
 1. Deploys a single Vault instance with a raft backend. - [raft.sh]
 
     a. This will unseal the vault and login in the current terminal (user)
