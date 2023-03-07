@@ -18,6 +18,8 @@ CN_ROOT_NO_SPACE="${CN_ROOT// /_}"
 CN_INTER_NO_SPACE="${CN_INTER// /_}"
 ADDRESS="http://127.0.0.1:8200"
 NO_TLS="-tls-skip-verify"
+KEY_TYPE="ec"
+KEY_BITS="256"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 #set -aex
@@ -47,7 +49,7 @@ echo
 # configure a CA certificate and private key;
 # the private key is stored internally in Vault
 vault write "${NO_TLS}" -field=certificate pki/root/generate/internal \
-      common_name="${CN_ROOT}" ttl=87600h ou="my dept" | \
+      common_name="${CN_ROOT}" key_type="${KEY_TYPE}" ttl=87600h ou="my dept" | \
       tee "$ROOT_INTER_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
 echo
 
@@ -83,7 +85,7 @@ echo
 # Generate an intermediate and save the CSR as $CN_pki_intermediate.csr
 vault write "${NO_TLS}" -format=json \
       pki_int/intermediate/generate/internal \
-      common_name="${CN_INTER}" | jq -r '.data.csr' > \
+      common_name="${CN_INTER}" key_type="${KEY_TYPE}" | jq -r '.data.csr' > \
       "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr
 echo
 
@@ -103,7 +105,8 @@ echo
 # Create a role named $VAULT_ROLE which will allow subdomains,
 # and specify the default issuer ref ID as the value of issuer_ref
 vault write "${NO_TLS}" pki_int/roles/"$VAULT_ROLE" \
-      allowed_domains="$DOMAIN" allow_subdomains=true max_ttl="43800h"
+      allowed_domains="${DOMAIN}" allow_subdomains=true max_ttl="43800h" \
+      key_type="${KEY_TYPE}" key_bits="${KEY_BITS}"
 echo
 
 printf "\n%s" \
