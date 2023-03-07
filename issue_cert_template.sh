@@ -58,8 +58,10 @@ jq -r '.data.private_key' "$OUT_DIR/${OUT_FILE}" > "${OUT_DIR}/${HOST}_cert.key"
 
 printf "\n%s" \
   "*** To view ${HOST}_cert.key private certificate execute this command:***"\
-  "openssl ec -in ${OUT_DIR}/${HOST}_cert.key -check"\
+  "openssl pkey -in ${OUT_DIR}/${HOST}_cert.key -check"\
   ""\
+  "*** To view ${HOST}_cert.key public certificate execute this command:***"\
+  "openssl pkey -in ${OUT_DIR}/${HOST}_cert.key -pubout"\
   ""\
   "*** To view ${HOST}_cert.crt public certificate execute this command:***"\
   "openssl x509 -in ${OUT_DIR}/${HOST}_cert.crt -text -noout"\
