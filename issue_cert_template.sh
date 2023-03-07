@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# edit the HOST and DOMAIN for the Subject-Common Name (SUBJECT_CN) 
+# edit the HOST and DOMAIN for the Subject-Common Name (SUBJECT_CN)
 # you want to appear on the certificate
 #
 # edit or omit the IP address in the Subject Alternative Name (SAN)
@@ -16,11 +16,13 @@ HOST="template"
 DOMAIN="middleearth.test"
 SUBJECT_CN="${HOST}.${DOMAIN}"
 VAULT_ROLE="middle_earth_role"
-IP_SAN1="172.16.186.128"
+IP_SAN1="192.168.60.6"
 #IP_SAN2=""
 ALT_NAME1="${SUBJECT_CN}"
 #ALT_NAME2=""
 TTL="9552h"
+KEY_TYPE="ec"
+KEY_BITS="256"
 
 OUT_DIR="${SUBJECT_CN}"
 OUT_FILE="${HOST}_csr_signed_output.json"
@@ -39,6 +41,8 @@ vault write "${NO_TLS}" -format=json pki_int/issue/"${VAULT_ROLE}" \
       common_name="${SUBJECT_CN}" \
       ip_sans="${IP_SAN1}" \
       alt_names="${ALT_NAME1}" \
+      key_type="${KEY_TYPE}" \
+      key_bits="${KEY_BITS}" \
       ttl="${TTL}" | tee "${OUT_DIR}/${OUT_FILE}"
 
 # alternative example command that allows multiple SAN entries
@@ -54,7 +58,7 @@ jq -r '.data.private_key' "$OUT_DIR/${OUT_FILE}" > "${OUT_DIR}/${HOST}_cert.key"
 
 printf "\n%s" \
   "*** To view ${HOST}_cert.key private certificate execute this command:***"\
-  "openssl rsa -in ${OUT_DIR}/${HOST}_cert.key -check"\
+  "openssl ec -in ${OUT_DIR}/${HOST}_cert.key -check"\
   ""\
   ""\
   "*** To view ${HOST}_cert.crt public certificate execute this command:***"\
