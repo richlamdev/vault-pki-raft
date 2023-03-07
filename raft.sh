@@ -87,7 +87,7 @@ function start_vault {
     ""
 
   vault operator unseal "$UNSEAL_KEY"
-  vault login "$VAULT_TOKEN"
+  vault login "${NO_TLS}" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
   printf "\n%s"\
@@ -163,8 +163,8 @@ function restore_snapshot {
     ""\
     ""
 
-  vault operator unseal "$UNSEAL_KEY"
-  vault login "$VAULT_TOKEN"
+  vault operator "${NO_TLS}" unseal "$UNSEAL_KEY"
+  vault login "${NO_TLS}" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
   printf "\n%s"\
