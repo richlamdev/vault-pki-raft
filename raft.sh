@@ -67,7 +67,7 @@ function start_vault {
   printf "\n%s" \
     "Initializing and capturing the unseal key and root token" \
     ""
-  sleep 1
+  sleep 2
 
   INIT_RESPONSE=$(vault operator init \
                   -format=json -key-shares 1 -key-threshold 1)
@@ -83,10 +83,18 @@ function start_vault {
     "Unseal key: $UNSEAL_KEY"\
     "Root token: $VAULT_TOKEN"\
     ""\
-    "Unsealing and logging in"\
+    "Unsealing vault"\
+    ""\
     ""
 
   vault operator unseal "$UNSEAL_KEY"
+  sleep 2
+
+  printf "\n%s"\
+    "Logging into vault as root"\
+    ""\
+    ""
+
   vault login "${NO_TLS}" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
