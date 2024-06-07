@@ -13,15 +13,14 @@ ADDRESS="http://127.0.0.1:8200"
 NO_TLS="-tls-skip-verify"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
-
 function stop_vault {
 
   echo "Checking for vault process running."
-  VAULT_ID=$(pgrep -u $USER vault)
+  VAULT_ID=$(pgrep -u "$USER" vault)
   if [[ $? -eq 0 ]]; then
     echo "[ Stopping vault process ]"
     echo
-    kill $VAULT_ID
+    kill "$VAULT_ID"
   fi
 
   echo "Checking if $STORAGE_FOLDER exists."
@@ -43,26 +42,25 @@ function stop_vault {
   echo
 }
 
-
 function start_vault {
 
-  printf "\n%s"\
-    "Removing any prior data or services before continuing..."\
-    ""\
+  printf "\n%s" \
+    "Removing any prior data or services before continuing..." \
+    "" \
     ""
 
   stop_vault
 
   printf "\n%s" \
-    "Starting vault"\
-    "Cleaning up existing vault data created"\
-    "Starting vault server"\
-    "Creating storage folder: $STORAGE_FOLDER"\
-    ""\
+    "Starting vault" \
+    "Cleaning up existing vault data created" \
+    "Starting vault server" \
+    "Creating storage folder: $STORAGE_FOLDER" \
+    ""
 
   mkdir $STORAGE_FOLDER
 
-  vault server --log-level=trace -config "$CONFIG_FILE" > "$VAULT_LOG" 2>&1 &
+  vault server --log-level=trace -config "$CONFIG_FILE" >"$VAULT_LOG" 2>&1 &
 
   printf "\n%s" \
     "Initializing and capturing the unseal key and root token" \
@@ -70,45 +68,44 @@ function start_vault {
   sleep 2
 
   INIT_RESPONSE=$(vault operator init \
-                  -format=json -key-shares 1 -key-threshold 1)
+    -format=json -key-shares 1 -key-threshold 1)
   echo
 
   UNSEAL_KEY=$(echo "$INIT_RESPONSE" | jq -r .unseal_keys_b64[0])
   VAULT_TOKEN=$(echo "$INIT_RESPONSE" | jq -r .root_token)
 
-  echo "$UNSEAL_KEY" > unseal_key
-  echo "$VAULT_TOKEN" > root_token
+  echo "$UNSEAL_KEY" >unseal_key
+  echo "$VAULT_TOKEN" >root_token
 
-  printf "\n%s"\
-    "Unseal key: $UNSEAL_KEY"\
-    "Root token: $VAULT_TOKEN"\
-    ""\
-    "Unsealing vault"\
-    ""\
+  printf "\n%s" \
+    "Unseal key: $UNSEAL_KEY" \
+    "Root token: $VAULT_TOKEN" \
+    "" \
+    "Unsealing vault" \
+    "" \
     ""
 
   vault operator unseal "$UNSEAL_KEY"
   sleep 2
 
-  printf "\n%s"\
-    "Logging into vault as root"\
-    ""\
+  printf "\n%s" \
+    "Logging into vault as root" \
+    "" \
     ""
 
   vault login "${NO_TLS}" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
-  printf "\n%s"\
-    "The root token has been copied to the system buffer"\
-    "Root token:"\
-    "$VAULT_TOKEN"\
-    ""\
-    "Use ctrl-v to paste"\
-    "Use(paste) token at ${ADDRESS} via web browser, to login to vault GUI"\
-    ""\
+  printf "\n%s" \
+    "The root token has been copied to the system buffer" \
+    "Root token:" \
+    "$VAULT_TOKEN" \
+    "" \
+    "Use ctrl-v to paste" \
+    "Use(paste) token at ${ADDRESS} via web browser, to login to vault GUI" \
+    "" \
     ""
 }
-
 
 function save_snapshot {
 
@@ -117,10 +114,10 @@ function save_snapshot {
   mkdir "backup_${RANDOM_ID}"
 
   printf "\n%s" \
-    "Saving snapshot to: backup_${RANDOM_ID}/snapshot${RANDOM_ID}"\
-    "Saving unseal key to: backup_${RANDOM_ID}/unseal_key${RANDOM_ID}"\
-    "Saving root token to: backup_${RANDOM_ID}/root_token${RANDOM_ID}"\
-    ""\
+    "Saving snapshot to: backup_${RANDOM_ID}/snapshot${RANDOM_ID}" \
+    "Saving unseal key to: backup_${RANDOM_ID}/unseal_key${RANDOM_ID}" \
+    "Saving root token to: backup_${RANDOM_ID}/root_token${RANDOM_ID}" \
+    "" \
     ""
 
   vault operator raft snapshot save "backup_${RANDOM_ID}/snapshot${RANDOM_ID}"
@@ -128,15 +125,14 @@ function save_snapshot {
   cp root_token "backup_${RANDOM_ID}/root_token${RANDOM_ID}"
 }
 
-
 function restore_snapshot {
 
   if [[ $# -ne 1 ]]; then
     printf "\n%s" \
-      "Please provide snapshot folder."\
-      ""\
-      "Eg:./raft.sh restore backup_1a6e"\
-      ""\
+      "Please provide snapshot folder." \
+      "" \
+      "Eg:./raft.sh restore backup_1a6e" \
+      "" \
       ""
     exit 1
   fi
@@ -145,11 +141,11 @@ function restore_snapshot {
   ID=${1:7:4}
 
   printf "\n%s" \
-    "Restoring vault from folder: $1"\
-    ""\
-    "Restoring snapshot from file backup_${ID}/snapshot${ID}"\
-    "Using unseal token from file backup_${ID}/unseal_key${ID}"\
-    "Using root token from file backup_${ID}/unseal_key${ID}"\
+    "Restoring vault from folder: $1" \
+    "" \
+    "Restoring snapshot from file backup_${ID}/snapshot${ID}" \
+    "Using unseal token from file backup_${ID}/unseal_key${ID}" \
+    "Using root token from file backup_${ID}/unseal_key${ID}" \
     ""
 
   # force restoration of the backup snapshot
@@ -166,51 +162,46 @@ function restore_snapshot {
   printf "\n%s" \
     "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
     "Setting VAULT_TOKEN to token: $VAULT_TOKEN" \
-    ""\
+    "" \
     "Unsealing and logging in" \
-    ""\
+    "" \
     ""
 
   vault operator "${NO_TLS}" unseal "$UNSEAL_KEY"
   vault login "${NO_TLS}" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
-  printf "\n%s"\
-    "The root token is copied to the system buffer"\
-    "Root token:"\
-    "$VAULT_TOKEN"\
-    ""\
-    "Use ctrl-v to paste"\
-    "Paste the token at ${ADDRESS} via web browser, to login to the Vault GUI"\
+  printf "\n%s" \
+    "The root token is copied to the system buffer" \
+    "Root token:" \
+    "$VAULT_TOKEN" \
+    "" \
+    "Use ctrl-v to paste" \
+    "Paste the token at ${ADDRESS} via web browser, to login to the Vault GUI" \
     ""
   source ./env.sh
 }
 
-
 function put_data {
 
   printf "\n%s" \
-    "Entering mock data"\
-    ""\
+    "Entering mock data" \
+    "" \
     ""
 
   vault secrets enable -path=kv kv-v2
   vault kv put /kv/apikey webapp=AAABBB238472320238CCC
 }
 
-
 function get_data {
 
   printf "\n%s" \
-    "Fetching mock data"\
-    ""\
+    "Fetching mock data" \
+    "" \
     ""
 
   vault kv get /kv/apikey
 }
-
-
-
 
 function clean_all {
 
@@ -226,7 +217,7 @@ function clean_all {
   fi
 
   echo "Checking for any *.${DOMAIN} folders"
-  CERTS_EXISTS=$(ls *${DOMAIN} 1> /dev/null 2>&1)
+  CERTS_EXISTS=$(ls *${DOMAIN} 1>/dev/null 2>&1)
   if [[ $? -eq 0 ]]; then
     echo "[ Removing *.${DOMAIN} folders ]"
     echo
@@ -234,7 +225,7 @@ function clean_all {
   fi
 
   echo "Checking for any backup folders"
-  BACKUPS_EXISTS=$(ls backup_* 1> /dev/null 2>&1)
+  BACKUPS_EXISTS=$(ls backup_* 1>/dev/null 2>&1)
   if [[ $? -eq 0 ]]; then
     echo "[ Removing backup_* folders ]"
     echo
@@ -262,7 +253,7 @@ function main {
       save_snapshot
       ;;
     restore)
-      shift ;
+      shift
       restore_snapshot "$@"
       ;;
     putdata)
