@@ -29,13 +29,13 @@ source ./env.sh
 mkdir "$ROOT_INTER_DIR"
 
 printf "\n%s" \
-  ""\
-  "*** Create Root Certificate ***"\
-  ""\
-  ""\
+  "" \
+  "*** Create Root Certificate ***" \
+  "" \
+  ""
 
 # login/authenticate locally
-vault login "${NO_TLS}" $(cat root_token)
+vault login "${NO_TLS}" "$(cat root_token)"
 echo
 
 # enable the PKI secrets engine
@@ -49,8 +49,8 @@ echo
 # configure a CA certificate and private key;
 # the private key is stored internally in Vault
 vault write "${NO_TLS}" -field=certificate pki/root/generate/internal \
-      common_name="${CN_ROOT}" key_type="${KEY_TYPE}" ttl=87600h ou="my dept" | \
-      tee "$ROOT_INTER_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
+  common_name="${CN_ROOT}" key_type="${KEY_TYPE}" ttl=87600h ou="my dept" |
+  tee "$ROOT_INTER_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
 echo
 
 # list the issuer information for the root CA
@@ -62,15 +62,14 @@ echo
 
 # configure the CA and the CRL URLs.
 vault write "${NO_TLS}" pki/config/urls \
-      issuing_certificates="${ADDRESS}/v1/pki/ca" \
-      crl_distribution_points="${ADDRESS}/v1/pki/crl"
+  issuing_certificates="${ADDRESS}/v1/pki/ca" \
+  crl_distribution_points="${ADDRESS}/v1/pki/crl"
 echo
 
-
 printf "\n%s" \
-  ""\
-  "*** Create Intermediate Certificate ***"\
-  ""\
+  "" \
+  "*** Create Intermediate Certificate ***" \
+  "" \
   ""
 
 # enable the pki secrets engine at the pki_int path
@@ -84,41 +83,41 @@ echo
 
 # Generate an intermediate and save the CSR as $CN_pki_intermediate.csr
 vault write "${NO_TLS}" -format=json \
-      pki_int/intermediate/generate/internal \
-      common_name="${CN_INTER}" key_type="${KEY_TYPE}" | jq -r '.data.csr' > \
-      "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr
+  pki_int/intermediate/generate/internal \
+  common_name="${CN_INTER}" key_type="${KEY_TYPE}" | jq -r '.data.csr' > \
+  "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr
 echo
 
 # Sign the intermediate certificate with the root CA private key,
 # and save the generated certificate as intermediate.cert.pem
 vault write "${NO_TLS}" -format=json pki/root/sign-intermediate \
-      csr=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr \
-      format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > \
-      "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
+  csr=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr \
+  format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > \
+  "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
 echo
 
 # Import the signed CSR into Vault
 vault write "${NO_TLS}" pki_int/intermediate/set-signed \
-      certificate=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
+  certificate=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
 echo
 
 # Create a role named $VAULT_ROLE which will allow subdomains,
 # and specify the default issuer ref ID as the value of issuer_ref
 vault write "${NO_TLS}" pki_int/roles/"$VAULT_ROLE" \
-      allowed_domains="${DOMAIN}" allow_subdomains=true max_ttl="43800h" \
-      key_type="${KEY_TYPE}" key_bits="${KEY_BITS}"
+  allowed_domains="${DOMAIN}" allow_subdomains=true max_ttl="43800h" \
+  key_type="${KEY_TYPE}" key_bits="${KEY_BITS}"
 echo
 
 printf "\n%s" \
-  "*** To view root certificate execute the following command:***"\
+  "*** To view root certificate execute the following command:***" \
   "openssl x509 -in ${ROOT_INTER_DIR}/${CN_ROOT_NO_SPACE}.root_cert.crt\
-  -text -noout"\
-  ""\
-  ""\
-  "*** To view intermediate certificate execute the following command:***"\
+  -text -noout" \
+  "" \
+  "" \
+  "*** To view intermediate certificate execute the following command:***" \
   "openssl x509 -in \
-  ${ROOT_INTER_DIR}/${CN_INTER_NO_SPACE}_signed_by_root.cert.pem -text -noout"\
-  ""\
+  ${ROOT_INTER_DIR}/${CN_INTER_NO_SPACE}_signed_by_root.cert.pem -text -noout" \
+  "" \
   ""
 
-touch "${ROOT_INTER_DIR}"/created_$(date +"%Y-%m-%d--%H-%M-%S")
+touch "${ROOT_INTER_DIR}/created_$(date +"%Y-%m-%d--%H-%M-%S")"
