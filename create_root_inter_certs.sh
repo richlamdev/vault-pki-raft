@@ -7,24 +7,26 @@
 # issue_cert_template.sh
 # if the VAULT_ROLE values do not match, certificates will not be signed/issued
 
-DOMAIN="middleearth.test"
-ISSUER_NAME_CN="Lord of the Rings"
-VAULT_ROLE="middle_earth_role"
+source ./env.sh
+
+DOMAIN="$DOMAIN_STRING"
+ISSUER_NAME_CN="$ISSUER_NAME_CN_STRING"
+VAULT_ROLE="$VAULT_ROLE_STRING"
 
 ROOT_INTER_DIR="./root_inter_certs"
 CN_ROOT="${ISSUER_NAME_CN} Root Authority"
 CN_INTER="${ISSUER_NAME_CN} Intermediate Authority"
 CN_ROOT_NO_SPACE="${CN_ROOT// /_}"
 CN_INTER_NO_SPACE="${CN_INTER// /_}"
-ADDRESS="http://127.0.0.1:8200"
-NO_TLS="-tls-skip-verify"
-KEY_TYPE="ec"
-KEY_BITS="256"
+ADDRESS="$VAULT_ADDR"
+NO_TLS="$NO_TLS_STRING"
+KEY_TYPE="$KEY_TYPE_STRING"
+KEY_BITS="$KEY_BITS_STRING"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
 #set -aex
 
-source ./env.sh
+#source ./env.sh
 
 mkdir "$ROOT_INTER_DIR"
 

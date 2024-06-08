@@ -12,24 +12,27 @@
 # edit VAULT_ROLE if you desire.  This role name *must* match the role name
 # in create_root_inter_certificates.sh
 # if the VAULT_ROLE values do not match, certificates will not be signed/issued
-HOST="template"
-DOMAIN="middleearth.test"
+
+source ./env.sh
+
+HOST="$HOST_STRING"
+DOMAIN="$DOMAIN_STRING"
 SUBJECT_CN="${HOST}.${DOMAIN}"
-VAULT_ROLE="middle_earth_role"
+VAULT_ROLE="$VAULT_ROLE_STRING"
 IP_SAN1="192.168.60.6"
 #IP_SAN2=""
 ALT_NAME1="${SUBJECT_CN}"
 #ALT_NAME2=""
 TTL="9552h"
-KEY_TYPE="ec"
-KEY_BITS="256"
+KEY_TYPE="$KEY_TYPE_STRING"
+KEY_BITS="$KEY_BITS_STRING"
 
 OUT_DIR="${SUBJECT_CN}"
 OUT_FILE="${HOST}_csr_signed_output.json"
-NO_TLS="-tls-skip-verify"
+NO_TLS="$NO_TLS_STRING"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
-source ./env.sh
+#source ./env.sh
 
 if [ ! -d "${OUT_DIR}" ]; then
   mkdir "${OUT_DIR}"
