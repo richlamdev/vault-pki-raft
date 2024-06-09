@@ -1,30 +1,21 @@
 #!/bin/bash
+# edit env.sh as required.  Refer to README.md for more details.
 
-# edit ISSUER_NAME_CN for the Certificate Authority (CA) want to appear
-# on certificates.
-# edit DOMAIN for the allowed domains the CA is allowed to certify
-# edit VAULT_ROLE if you desire.  This role name *must* match the role name in
-# issue_cert_template.sh
-# if the VAULT_ROLE values do not match, certificates will not be signed/issued
+source ./env.sh
 
-DOMAIN="middleearth.test"
-ISSUER_NAME_CN="Lord of the Rings"
-VAULT_ROLE="middle_earth_role"
+DOMAIN="$DOMAIN_STRING"
+ISSUER_NAME_CN="$ISSUER_NAME_CN_STRING"
+VAULT_ROLE="$VAULT_ROLE_STRING"
 
 ROOT_INTER_DIR="./root_inter_certs"
 CN_ROOT="${ISSUER_NAME_CN} Root Authority"
 CN_INTER="${ISSUER_NAME_CN} Intermediate Authority"
 CN_ROOT_NO_SPACE="${CN_ROOT// /_}"
 CN_INTER_NO_SPACE="${CN_INTER// /_}"
-ADDRESS="http://127.0.0.1:8200"
-NO_TLS="-tls-skip-verify"
-KEY_TYPE="ec"
-KEY_BITS="256"
-#VAULT_ADDR="http://127.0.0.1:8200"
-
-#set -aex
-
-source ./env.sh
+ADDRESS="$VAULT_ADDR"
+NO_TLS="$NO_TLS_STRING"
+KEY_TYPE="$KEY_TYPE_STRING"
+KEY_BITS="$KEY_BITS_STRING"
 
 mkdir "$ROOT_INTER_DIR"
 
@@ -104,7 +95,7 @@ echo
 # Create a role named $VAULT_ROLE which will allow subdomains,
 # and specify the default issuer ref ID as the value of issuer_ref
 vault write "${NO_TLS}" pki_int/roles/"$VAULT_ROLE" \
-  allowed_domains="${DOMAIN}" allow_subdomains=true max_ttl="43800h" \
+  allowed_domains="${DOMAIN}" allow_subdomains=true allowed_common_names="*" max_ttl="43800h" \
   key_type="${KEY_TYPE}" key_bits="${KEY_BITS}"
 echo
 

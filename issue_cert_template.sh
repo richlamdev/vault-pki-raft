@@ -1,35 +1,22 @@
 #!/bin/bash
 
-# edit the HOST and DOMAIN for the Subject-Common Name (SUBJECT_CN)
-# you want to appear on the certificate
-#
-# edit or omit the IP address in the Subject Alternative Name (SAN)
-#
-# edit the TTL to set the certificate expiry,
-# presently set to 9552hours or 398 days
-# Reference: https://support.apple.com/en-ca/HT211025
-#
-# edit VAULT_ROLE if you desire.  This role name *must* match the role name
-# in create_root_inter_certificates.sh
-# if the VAULT_ROLE values do not match, certificates will not be signed/issued
-HOST="template"
-DOMAIN="middleearth.test"
-SUBJECT_CN="${HOST}.${DOMAIN}"
-VAULT_ROLE="middle_earth_role"
-IP_SAN1="192.168.60.6"
+source ./env.sh
+
+HOST="$HOST_STRING"
+#DOMAIN="$DOMAIN_STRING"
+SUBJECT_CN="$SUBJECT_CN_STRING"
+VAULT_ROLE="$VAULT_ROLE_STRING"
+IP_SAN1="$IP_SAN1_STRING"
+ALT_NAME1="$ALT_NAME1_STRING"
 #IP_SAN2=""
-ALT_NAME1="${SUBJECT_CN}"
-#ALT_NAME2=""
-TTL="9552h"
-KEY_TYPE="ec"
-KEY_BITS="256"
+#ALT_NAME2="$ALT_NAME2_STRING"
+TTL="$TTL_STRING"
+KEY_TYPE="$KEY_TYPE_STRING"
+KEY_BITS="$KEY_BITS_STRING"
 
 OUT_DIR="${SUBJECT_CN}"
 OUT_FILE="${HOST}_csr_signed_output.json"
-NO_TLS="-tls-skip-verify"
-#VAULT_ADDR="http://127.0.0.1:8200"
-
-source ./env.sh
+NO_TLS="$NO_TLS_STRING"
 
 if [ ! -d "${OUT_DIR}" ]; then
   mkdir "${OUT_DIR}"
