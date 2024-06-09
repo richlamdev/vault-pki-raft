@@ -22,11 +22,6 @@ ADDRESS="$VAULT_ADDR"
 NO_TLS="$NO_TLS_STRING"
 KEY_TYPE="$KEY_TYPE_STRING"
 KEY_BITS="$KEY_BITS_STRING"
-#VAULT_ADDR="http://127.0.0.1:8200"
-
-#set -aex
-
-#source ./env.sh
 
 mkdir "$ROOT_INTER_DIR"
 

@@ -30,9 +30,6 @@ KEY_BITS="$KEY_BITS_STRING"
 OUT_DIR="${SUBJECT_CN}"
 OUT_FILE="${HOST}_csr_signed_output.json"
 NO_TLS="$NO_TLS_STRING"
-#VAULT_ADDR="http://127.0.0.1:8200"
-
-#source ./env.sh
 
 if [ ! -d "${OUT_DIR}" ]; then
   mkdir "${OUT_DIR}"
