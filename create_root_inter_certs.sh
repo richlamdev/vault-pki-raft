@@ -106,7 +106,7 @@ echo
 # Create a role named $VAULT_ROLE which will allow subdomains,
 # and specify the default issuer ref ID as the value of issuer_ref
 vault write "${NO_TLS}" pki_int/roles/"$VAULT_ROLE" \
-  allowed_domains="${DOMAIN}" allow_subdomains=true max_ttl="43800h" \
+  allowed_domains="${DOMAIN}" allow_subdomains=true allowed_common_names="*" max_ttl="43800h" \
   key_type="${KEY_TYPE}" key_bits="${KEY_BITS}"
 echo
 
