@@ -1,11 +1,5 @@
 #!/bin/bash
-
-# edit ISSUER_NAME_CN for the Certificate Authority (CA) want to appear
-# on certificates.
-# edit DOMAIN for the allowed domains the CA is allowed to certify
-# edit VAULT_ROLE if you desire.  This role name *must* match the role name in
-# issue_cert_template.sh
-# if the VAULT_ROLE values do not match, certificates will not be signed/issued
+# edit env.sh as required.  Refer to README.md for more details.
 
 source ./env.sh
 

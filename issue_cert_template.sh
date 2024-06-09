@@ -1,18 +1,5 @@
 #!/bin/bash
 
-# edit the HOST and DOMAIN for the Subject-Common Name (SUBJECT_CN)
-# you want to appear on the certificate
-#
-# edit or omit the IP address in the Subject Alternative Name (SAN)
-#
-# edit the TTL to set the certificate expiry,
-# presently set to 9552hours or 398 days
-# Reference: https://support.apple.com/en-ca/HT211025
-#
-# edit VAULT_ROLE if you desire.  This role name *must* match the role name
-# in create_root_inter_certificates.sh
-# if the VAULT_ROLE values do not match, certificates will not be signed/issued
-
 source ./env.sh
 
 HOST="$HOST_STRING"
