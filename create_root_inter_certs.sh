@@ -111,4 +111,11 @@ printf "\n%s" \
   "" \
   ""
 
+cp "${ROOT_INTER_DIR}/${CN_ROOT_NO_SPACE}.root_cert.crt" ./docker/.
+
+printf "\n%s" \
+  "*** copied root certificate to ./docker/${CN_ROOT_NO_SPACE}.root_cert.crt***" \
+  "" \
+  ""
+
 touch "${ROOT_INTER_DIR}/created_$(date +"%Y-%m-%d--%H-%M-%S")"

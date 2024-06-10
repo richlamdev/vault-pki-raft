@@ -54,3 +54,15 @@ printf "\n%s" \
   ""
 
 touch "${OUT_DIR}/created_$(date +"%Y-%m-%d--%H-%M-%S")"
+
+cp "${OUT_DIR}/${HOST}_cert.crt" ./docker/.
+cp "${OUT_DIR}/${HOST}_cert.key" ./docker/.
+
+printf "\n%s" \
+  "*** copied ${HOST}_cert.crt to ./docker/${HOST}_cert.crt***" \
+  "" \
+  "*** copied ${HOST}_cert.key to ./docker/${HOST}_cert.key***" \
+  "" \
+  "edit the DockerFile in ./docker to create the image and execute the container" \
+  "" \
+  ""
