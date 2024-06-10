@@ -12,6 +12,7 @@
   * [Quick Start Explanation - short version](#quick-start-explanation---short-version)
   * [Quick Start Explanation - long version](#quick-start-explanation---long-version)
   * [Creating custom leaf certificates](#creating-custom-leaf-certificates)
+  * [Web Browswer Testing with Docker](#web-browswer-testing-with-docker)
   * [Commands](#commands)
     + [Save Vault state (save snapshot)](#save-vault-state--save-snapshot-)
     + [Restore Vault state (restore snapshot)](#restore-vault-state--restore-snapshot-)
@@ -186,8 +187,8 @@ Inspecting template.middleearth.test certificate via openssl command:
 Optionally deploy the template certificate to a web server for inspection via
 web browser.  The below is taken from Nginx in a Ubuntu Virtual Machine
 (VM).  Naturally, alternatives would achieve similar results, such as Docker
-with Apache or Nginx, Windows & IIS etc.  The certificate inpsected via Firefox
-browser:
+with Apache or Nginx, Windows & IIS etc.  Refer to Web Browser Testing with
+Docker section.  The certificate inpsected via Firefox browser:
 ![Firefox2](images/firefox_certificate2.png)
 <br/>
 <br/>
@@ -264,6 +265,19 @@ Naturally, in the case of development or private environment set the length to
 your desire.  Note that it cannot exceed the TTL of the root CA, which is
 default 10 years.  Refer to References section below for more information.
 Reference: https://support.apple.com/en-ca/HT211025
+
+
+## Web Browswer Testing with Docker
+
+After the `issue_cert_template.sh` script has been run, you can test the
+custom certificates in a web browser via docker container.  Change to the
+./docker folder and adjust the Dockerfile to your needs and execute the
+`test-certificate.sh` script.
+
+Additionally after the `create_root_inter_certs.sh` script has been run, the
+root certificate is copied to the ./docker folder.  This is not required for
+the docker container, however, it's placed in this folder for convenience to
+import to your trusted store or web browser.
 
 
 ## Commands
