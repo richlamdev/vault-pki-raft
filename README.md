@@ -256,7 +256,7 @@ Edit the TTL variable (aka expiry) to adjust the validity period of the
 certificate in _issue_cert_template.sh_. This number is set in hours, per valid
 by Vault software.
 
-Presently the TTL is set for 9552 hours or 398 days.  Set to 398 days as per
+Presently the TTL is set for 9528 hours or 397 days.  Set to 397 days as per
 default expiry for public leaf certificates governed by major browser
 manufacturers, Google, Apple, and Mozilla.  More often than not, many public
 certificates have a one year maximum validity period. (sometimes less, in
