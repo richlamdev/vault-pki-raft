@@ -16,11 +16,14 @@ NO_TLS="-tls-skip-verify"
 function stop_vault {
 
   echo "Checking for vault process running."
-  VAULT_ID=$(pgrep -u "$USER" vault)
-  if [[ $? -eq 0 ]]; then
+  #VAULT_ID=$(pgrep -u "$USER" vault)
+  #if [[ $? -eq 0 ]]; then
+  if VAULT_ID=$(pgrep -u "$USER" vault); then
     echo "[ Stopping vault process ]"
     echo
     kill "$VAULT_ID"
+  else
+    echo "Vault process not found."
   fi
 
   echo "Checking if $STORAGE_FOLDER exists."
@@ -153,11 +156,11 @@ function restore_snapshot {
 
   # copy backup unseal key and root token as current unseal key and root token
   # in other words copy to the current working directory
-  cp backup_$ID/unseal_key$ID unseal_key
-  cp backup_$ID/root_token$ID root_token
+  cp "backup_$ID/unseal_key$ID" unseal_key
+  cp "backup_$ID/root_token$ID" root_token
 
-  UNSEAL_KEY=$(cat backup_$ID/unseal_key$ID)
-  VAULT_TOKEN=$(cat backup_$ID/root_token$ID)
+  UNSEAL_KEY=$(cat "backup_$ID/unseal_key$ID")
+  VAULT_TOKEN=$(cat "backup_$ID/root_token$ID")
 
   printf "\n%s" \
     "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
@@ -216,20 +219,38 @@ function clean_all {
     rm -rf "${ROOT_INTER_DIR}"
   fi
 
+  # echo "Checking for any *.${DOMAIN} folders"
+  # CERTS_EXISTS=$(ls *${DOMAIN} 1>/dev/null 2>&1)
+  # if [[ $? -eq 0 ]]; then
+  #   echo "[ Removing *.${DOMAIN} folders ]"
+  #   echo
+  #   rm -rf *."${DOMAIN}"
+  # fi
+
   echo "Checking for any *.${DOMAIN} folders"
-  CERTS_EXISTS=$(ls *${DOMAIN} 1>/dev/null 2>&1)
-  if [[ $? -eq 0 ]]; then
+  if compgen -G "*.${DOMAIN}" >/dev/null; then
     echo "[ Removing *.${DOMAIN} folders ]"
     echo
-    rm -rf *."${DOMAIN}"
+    rm -rf ./*."${DOMAIN}"
+  else
+    echo "No *.${DOMAIN} folders found."
   fi
 
+  # echo "Checking for any backup folders"
+  # BACKUPS_EXISTS=$(ls backup_* 1>/dev/null 2>&1)
+  # if [[ $? -eq 0 ]]; then
+  #   echo "[ Removing backup_* folders ]"
+  #   echo
+  #   rm -rf backup_*
+  # fi
+
   echo "Checking for any backup folders"
-  BACKUPS_EXISTS=$(ls backup_* 1>/dev/null 2>&1)
-  if [[ $? -eq 0 ]]; then
+  if compgen -G "backup_*" >/dev/null; then
     echo "[ Removing backup_* folders ]"
     echo
-    rm -rf backup_*
+    rm -rf ./backup_*
+  else
+    echo "No backup folders found."
   fi
 
   echo
