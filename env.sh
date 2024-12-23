@@ -1,6 +1,7 @@
 export VAULT_ADDR="http://127.0.0.1:8200"
 
-HOST_STRING="template"
+HOST_STRING="${1:-$HOST_STRING}"
+#HOST_STRING="blah"
 SLD_STRING="middleearth"
 TLD_STRING="test"
 DOMAIN_STRING="${SLD_STRING}.${TLD_STRING}"

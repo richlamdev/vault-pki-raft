@@ -1,6 +1,16 @@
 #!/bin/bash
 
+# Ensure the script is executed with a HOST_STRING argument
+if [ -z "$1" ]; then
+  echo "Error: HOST_STRING is required. Please provide a host name."
+  echo "Usage: ./issue_cert_template.sh <hostname>"
+  exit 1
+fi
+
 source ./env.sh
+
+# Override the HOST_STRING with the passed argument ($1)
+HOST_STRING="$1"
 
 HOST="$HOST_STRING"
 #DOMAIN="$DOMAIN_STRING"
@@ -15,7 +25,8 @@ KEY_TYPE="$KEY_TYPE_STRING"
 KEY_BITS="$KEY_BITS_STRING"
 
 OUT_DIR="${SUBJECT_CN}"
-OUT_FILE="${HOST}_csr_signed_output.json"
+#OUT_FILE="${HOST}_csr_signed_output.json"
+OUT_FILE="${HOST}_csr_signed_output_$(date +%Y%m%d%H%M%S).json"
 NO_TLS="$NO_TLS_STRING"
 
 if [ ! -d "${OUT_DIR}" ]; then
@@ -66,3 +77,4 @@ printf "\n%s" \
   "edit the DockerFile in ./docker to create the image and execute the container" \
   "" \
   ""
+echo "✅ Certificate and key generated successfully for ${SUBJECT_CN}"

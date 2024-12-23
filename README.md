@@ -101,7 +101,7 @@ Clone the Repo:
 Steps:\
 ```./raft.sh start```\
 ```./create_root_inter_certs.sh```\
-```./issue_cert_template.sh```
+```./issue_cert_template.sh template```
 
 
 ## Quick Start Explanation - short version
@@ -226,7 +226,8 @@ scripts.
 Edit the following in the _env.sh_ file.
 
 **Host / Subdomain:**\
-Edit Hostname (HOST_STRING) variable (aka subdomain)
+Pass in the HOSTNAME (aka subdomain) for the certificate as an argument to
+./issue_cert_template.sh IE: `./issue_cert_template.sh template`
 
 **Second Level Domain:**\
 Edit Second Level Domain (SLD_STRING) variable.
