@@ -13,29 +13,39 @@ ADDRESS="http://127.0.0.1:8200"
 NO_TLS="-tls-skip-verify"
 #VAULT_ADDR="http://127.0.0.1:8200"
 
+# Define colors from env.sh
+BLACK='\033[0;30m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[0;37m'
+NC='\033[0m' # No Color
+
 function stop_vault {
 
-  echo "Checking for vault process running."
+  echo -e "${CYAN}Checking for vault process running.${NC}"
   #VAULT_ID=$(pgrep -u "$USER" vault)
   #if [[ $? -eq 0 ]]; then
   if VAULT_ID=$(pgrep -u "$USER" vault); then
-    echo "[ Stopping vault process ]"
+    echo -e "${RED}[ Stopping vault process ]${NC}"
     echo
     kill "$VAULT_ID"
   else
-    echo "Vault process not found."
+    echo -e "${YELLOW}Vault process not found.${NC}"
   fi
 
-  echo "Checking if $STORAGE_FOLDER exists."
+  echo -e "${CYAN}Checking if $STORAGE_FOLDER exists.${NC}"
   if [[ -d "$STORAGE_FOLDER" ]]; then
-    echo "[ Deleting storage folder: $STORAGE_FOLDER ]"
+    echo -e "${RED}[ Deleting storage folder: $STORAGE_FOLDER ]${NC}"
     echo
     rm -rf $STORAGE_FOLDER
   fi
 
-  echo "Checking if unseal_key exists."
+  echo -e "${CYAN}Checking if unseal_key exists.${NC}"
   if [[ -f unseal_key ]]; then
-    echo "[ Deleting unseal_key, root_token, and vault.log ]"
+    echo -e "${RED}[ Deleting unseal_key, root_token, and vault.log ]${NC}"
     echo
     rm unseal_key
     rm root_token
@@ -47,14 +57,14 @@ function stop_vault {
 
 function start_vault {
 
-  printf "\n%s" \
+  printf "\n${GREEN}%s${NC}" \
     "Removing any prior data or services before continuing..." \
     "" \
     ""
 
   stop_vault
 
-  printf "\n%s" \
+  printf "\n${GREEN}%s${NC}" \
     "Starting vault" \
     "Cleaning up existing vault data created" \
     "Starting vault server" \
@@ -65,7 +75,7 @@ function start_vault {
 
   vault server --log-level=trace -config "$CONFIG_FILE" >"$VAULT_LOG" 2>&1 &
 
-  printf "\n%s" \
+  printf "\n${GREEN}%s${NC}" \
     "Initializing and capturing the unseal key and root token" \
     ""
   sleep 2
@@ -80,7 +90,7 @@ function start_vault {
   echo "$UNSEAL_KEY" >unseal_key
   echo "$VAULT_TOKEN" >root_token
 
-  printf "\n%s" \
+  printf "\n${GREEN}%s${NC}" \
     "Unseal key: $UNSEAL_KEY" \
     "Root token: $VAULT_TOKEN" \
     "" \
@@ -91,7 +101,7 @@ function start_vault {
   vault operator unseal "$UNSEAL_KEY"
   sleep 2
 
-  printf "\n%s" \
+  printf "\n${GREEN}%s${NC}" \
     "Logging into vault as root" \
     "" \
     ""
@@ -99,7 +109,7 @@ function start_vault {
   vault login "${NO_TLS}" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
-  printf "\n%s" \
+  printf "\n${GREEN}%s${NC}" \
     "The root token has been copied to the system buffer" \
     "Root token:" \
     "$VAULT_TOKEN" \
@@ -116,7 +126,7 @@ function save_snapshot {
 
   mkdir "backup_${RANDOM_ID}"
 
-  printf "\n%s" \
+  printf "\n${CYAN}%s${NC}" \
     "Saving snapshot to: backup_${RANDOM_ID}/snapshot${RANDOM_ID}" \
     "Saving unseal key to: backup_${RANDOM_ID}/unseal_key${RANDOM_ID}" \
     "Saving root token to: backup_${RANDOM_ID}/root_token${RANDOM_ID}" \
@@ -131,7 +141,7 @@ function save_snapshot {
 function restore_snapshot {
 
   if [[ $# -ne 1 ]]; then
-    printf "\n%s" \
+    printf "\n${RED}%s${NC}" \
       "Please provide snapshot folder." \
       "" \
       "Eg:./raft.sh restore backup_1a6e" \
@@ -143,7 +153,7 @@ function restore_snapshot {
   # retrieve ID of backup folder - last four chars of the folder name
   ID=${1:7:4}
 
-  printf "\n%s" \
+  printf "\n${CYAN}%s${NC}" \
     "Restoring vault from folder: $1" \
     "" \
     "Restoring snapshot from file backup_${ID}/snapshot${ID}" \
@@ -162,7 +172,7 @@ function restore_snapshot {
   UNSEAL_KEY=$(cat "backup_$ID/unseal_key$ID")
   VAULT_TOKEN=$(cat "backup_$ID/root_token$ID")
 
-  printf "\n%s" \
+  printf "\n${CYAN}%s${NC}" \
     "Setting UNSEAL_KEY to key: $UNSEAL_KEY" \
     "Setting VAULT_TOKEN to token: $VAULT_TOKEN" \
     "" \
@@ -174,7 +184,7 @@ function restore_snapshot {
   vault login "${NO_TLS}" "$VAULT_TOKEN"
 
   xclip -selection clipboard root_token
-  printf "\n%s" \
+  printf "\n${CYAN}%s${NC}" \
     "The root token is copied to the system buffer" \
     "Root token:" \
     "$VAULT_TOKEN" \
@@ -187,7 +197,7 @@ function restore_snapshot {
 
 function put_data {
 
-  printf "\n%s" \
+  printf "\n${MAGENTA}%s${NC}" \
     "Entering mock data" \
     "" \
     ""
@@ -198,7 +208,7 @@ function put_data {
 
 function get_data {
 
-  printf "\n%s" \
+  printf "\n${MAGENTA}%s${NC}" \
     "Fetching mock data" \
     "" \
     ""
@@ -210,47 +220,31 @@ function clean_all {
 
   stop_vault
 
-  echo "Checking for root and intermediate certificate folder:\
-        ${ROOT_INTER_DIR}"
+  echo -e "${CYAN}Checking for root and intermediate certificate folder:\
+        ${ROOT_INTER_DIR}${NC}"
   if [[ -d "${ROOT_INTER_DIR}" ]]; then
-    echo "[ Removing root and intermediate certificates folder:\
-        ${ROOT_INTER_DIR} ]"
+    echo -e "${RED}[ Removing root and intermediate certificates folder:\
+        ${ROOT_INTER_DIR} ]${NC}"
     echo
     rm -rf "${ROOT_INTER_DIR}"
   fi
 
-  # echo "Checking for any *.${DOMAIN} folders"
-  # CERTS_EXISTS=$(ls *${DOMAIN} 1>/dev/null 2>&1)
-  # if [[ $? -eq 0 ]]; then
-  #   echo "[ Removing *.${DOMAIN} folders ]"
-  #   echo
-  #   rm -rf *."${DOMAIN}"
-  # fi
-
-  echo "Checking for any *.${DOMAIN} folders"
+  echo -e "${CYAN}Checking for any *.${DOMAIN} folders${NC}"
   if compgen -G "*.${DOMAIN}" >/dev/null; then
-    echo "[ Removing *.${DOMAIN} folders ]"
+    echo -e "${RED}[ Removing *.${DOMAIN} folders ]${NC}"
     echo
     rm -rf ./*."${DOMAIN}"
   else
-    echo "No *.${DOMAIN} folders found."
+    echo -e "${YELLOW}No *.${DOMAIN} folders found.${NC}"
   fi
 
-  # echo "Checking for any backup folders"
-  # BACKUPS_EXISTS=$(ls backup_* 1>/dev/null 2>&1)
-  # if [[ $? -eq 0 ]]; then
-  #   echo "[ Removing backup_* folders ]"
-  #   echo
-  #   rm -rf backup_*
-  # fi
-
-  echo "Checking for any backup folders"
+  echo -e "${CYAN}Checking for any backup folders${NC}"
   if compgen -G "backup_*" >/dev/null; then
-    echo "[ Removing backup_* folders ]"
+    echo -e "${RED}[ Removing backup_* folders ]${NC}"
     echo
     rm -rf ./backup_*
   else
-    echo "No backup folders found."
+    echo -e "${YELLOW}No backup folders found.${NC}"
   fi
 
   echo
@@ -287,7 +281,7 @@ function main {
       clean_all
       ;;
     *)
-      printf "\n%s" \
+      printf "\n${YELLOW}%s${NC}" \
         "This script creates a single Vault instance using raft storage." \
         "" \
         "Usage: $0 [start|stop|save|restore|cleanup|putdata|getdata]" \
