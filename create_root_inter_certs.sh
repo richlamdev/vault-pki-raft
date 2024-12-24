@@ -1,8 +1,10 @@
 #!/bin/bash
-# edit env.sh as required.  Refer to README.md for more details.
+# edit env.sh as required. Refer to README.md for more details.
 
+# Source environment variables
 source ./env.sh
 
+# Variables
 DOMAIN="$DOMAIN_STRING"
 ISSUER_NAME_CN="$ISSUER_NAME_CN_STRING"
 VAULT_ROLE="$VAULT_ROLE_STRING"
@@ -19,81 +21,75 @@ KEY_BITS="$KEY_BITS_STRING"
 
 mkdir "$ROOT_INTER_DIR"
 
-printf "\n%s" \
-  "" \
-  "*** Create Root Certificate ***" \
-  "" \
-  ""
+# --- Root Certificate Creation ---
+printf "\n${CYAN}%s${NC}\n" "*** Create Root Certificate ***"
 
-# login/authenticate locally
+# Login to Vault
+printf "${MAGENTA}%s${NC}\n" "vault login \"${NO_TLS}\" \"\$(cat root_token)\""
 vault login "${NO_TLS}" "$(cat root_token)"
 echo
 
-# enable the PKI secrets engine
+# Enable PKI Secrets Engine
+printf "${MAGENTA}%s${NC}\n" "vault secrets enable \"${NO_TLS}\" pki"
 vault secrets enable "${NO_TLS}" pki
 echo
 
-# increase TTL by tuning the secrets engine, set to 30 days
+# Tune Secrets Engine
+printf "${MAGENTA}%s${NC}\n" "vault secrets tune \"${NO_TLS}\" -max-lease-ttl=87600h pki"
 vault secrets tune "${NO_TLS}" -max-lease-ttl=87600h pki
 echo
 
-# configure a CA certificate and private key;
-# the private key is stored internally in Vault
+# Generate Root Certificate
+printf "${MAGENTA}%s${NC}\n" "vault write \"${NO_TLS}\" -field=certificate pki/root/generate/internal ..."
 vault write "${NO_TLS}" -field=certificate pki/root/generate/internal \
   common_name="${CN_ROOT}" key_type="${KEY_TYPE}" ttl=87600h ou="my dept" |
   tee "$ROOT_INTER_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
 echo
 
-# list the issuer information for the root CA
-# vault list pki/issuers/
-
-# read the issuer with its ID to get the certificates
-# and other metadata about the issuer.
-# vault read pki/issuer/<number/id output from previous command>
-
-# configure the CA and the CRL URLs.
+# Configure CA and CRL URLs
+printf "${MAGENTA}%s${NC}\n" "vault write \"${NO_TLS}\" pki/config/urls ..."
 vault write "${NO_TLS}" pki/config/urls \
   issuing_certificates="${ADDRESS}/v1/pki/ca" \
   crl_distribution_points="${ADDRESS}/v1/pki/crl"
 echo
 
-printf "\n%s" \
-  "" \
-  "*** Create Intermediate Certificate ***" \
-  "" \
-  ""
+# --- Intermediate Certificate Creation ---
+printf "\n${CYAN}%s${NC}\n" "*** Create Intermediate Certificate ***"
 
-# enable the pki secrets engine at the pki_int path
+# Enable PKI Secrets Engine for Intermediate
+printf "${MAGENTA}%s${NC}\n" "vault secrets enable \"${NO_TLS}\" -path=pki_int pki"
 vault secrets enable "${NO_TLS}" -path=pki_int pki
 echo
 
-# Tune the pki_int secrets engine to issue certificates with a maximum
-# time-to-live (TTL) of 43800 hours or five years
+# Tune Intermediate Secrets Engine
+printf "${MAGENTA}%s${NC}\n" "vault secrets tune \"${NO_TLS}\" -max-lease-ttl=43800h pki_int"
 vault secrets tune "${NO_TLS}" -max-lease-ttl=43800h pki_int
 echo
 
-# Generate an intermediate and save the CSR as $CN_pki_intermediate.csr
+# Generate Intermediate CSR
+printf "${MAGENTA}%s${NC}\n" "vault write \"${NO_TLS}\" -format=json pki_int/intermediate/generate/internal ..."
 vault write "${NO_TLS}" -format=json \
   pki_int/intermediate/generate/internal \
   common_name="${CN_INTER}" key_type="${KEY_TYPE}" | jq -r '.data.csr' > \
   "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr
 echo
 
-# Sign the intermediate certificate with the root CA private key,
-# and save the generated certificate as intermediate.cert.pem
+# Sign Intermediate CSR
+printf "${MAGENTA}%s${NC}\n" "vault write \"${NO_TLS}\" -format=json pki/root/sign-intermediate ..."
 vault write "${NO_TLS}" -format=json pki/root/sign-intermediate \
   csr=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_pki_intermediate.csr \
   format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > \
   "$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
 echo
 
-# Import the signed CSR into Vault
+# Import Intermediate Certificate
+printf "${MAGENTA}%s${NC}\n" "vault write \"${NO_TLS}\" pki_int/intermediate/set-signed ..."
 vault write "${NO_TLS}" pki_int/intermediate/set-signed \
   certificate=@"$ROOT_INTER_DIR/$CN_INTER_NO_SPACE"_signed_by_root.cert.pem
 echo
 
-# Create a role named $VAULT_ROLE which will allow subdomains,
-# and specify the default issuer ref ID as the value of issuer_ref
+# Create Vault Role
+printf "${MAGENTA}%s${NC}\n" "vault write \"${NO_TLS}\" pki_int/roles/\"$VAULT_ROLE\" ..."
 vault write "${NO_TLS}" pki_int/roles/"$VAULT_ROLE" \
   allowed_domains="*.${DOMAIN},${DOMAIN}" \
   allow_subdomains=true \
@@ -104,23 +100,22 @@ vault write "${NO_TLS}" pki_int/roles/"$VAULT_ROLE" \
   issuer_ref="default"
 echo
 
-printf "\n%s" \
-  "*** To view root certificate execute the following command:***" \
-  "openssl x509 -in ${ROOT_INTER_DIR}/${CN_ROOT_NO_SPACE}.root_cert.crt\
-  -text -noout" \
-  "" \
-  "" \
-  "*** To view intermediate certificate execute the following command:***" \
-  "openssl x509 -in \
-  ${ROOT_INTER_DIR}/${CN_INTER_NO_SPACE}_signed_by_root.cert.pem -text -noout" \
-  "" \
-  ""
+# --- Display Certificate Commands ---
+printf "\n${CYAN}%s${NC}\n" "*** Certificate Review Commands ***"
+printf "${GREEN}%s${NC}\n" "To view root certificate:"
+printf "${YELLOW}%s${NC}\n" "openssl x509 -in ${ROOT_INTER_DIR}/${CN_ROOT_NO_SPACE}.root_cert.crt -text -noout"
+echo
 
+printf "${GREEN}%s${NC}\n" "To view intermediate certificate:"
+printf "${YELLOW}%s${NC}\n" "openssl x509 -in ${ROOT_INTER_DIR}/${CN_INTER_NO_SPACE}_signed_by_root.cert.pem -text -noout"
+echo
+
+# Copy root certificate
+printf "${CYAN}%s${NC}\n" "*** Copying Root Certificate to Docker Directory ***"
 cp "${ROOT_INTER_DIR}/${CN_ROOT_NO_SPACE}.root_cert.crt" ./docker/.
+printf "${GREEN}%s${NC}\n" "Copied to ./docker/${CN_ROOT_NO_SPACE}.root_cert.crt"
+echo
 
-printf "\n%s" \
-  "*** copied root certificate to ./docker/${CN_ROOT_NO_SPACE}.root_cert.crt***" \
-  "" \
-  ""
-
+# Create a timestamped file
 touch "${ROOT_INTER_DIR}/created_$(date +"%Y-%m-%d--%H-%M-%S")"
+printf "${GREEN}%s${NC}\n" "Timestamped file created successfully."
