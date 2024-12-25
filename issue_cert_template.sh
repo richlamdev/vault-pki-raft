@@ -8,19 +8,12 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+# edit env.sh as required.  Refer to README.md for more details.
+
 source ./env.sh
 
 # Override the HOST_STRING in env.sh with the passed argument ($1)
 HOST="$1"
-SUBJECT_CN="$SUBJECT_CN_STRING"
-VAULT_ROLE="$VAULT_ROLE_STRING"
-IP_SAN1="$IP_SAN1_STRING"
-ALT_NAME1="$ALT_NAME1_STRING"
-TTL="$TTL_STRING"
-KEY_TYPE="$KEY_TYPE_STRING"
-KEY_BITS="$KEY_BITS_STRING"
-NO_TLS="$NO_TLS_STRING"
-
 OUT_DIR="${SUBJECT_CN}"
 OUT_FILE="${HOST}_csr_signed_output_$(date +%Y%m%d%H%M%S).json"
 
