@@ -1,13 +1,18 @@
-# Use the official Nginx image as the base image
-FROM nginx
+# Dockerfile for serving certificates via Nginx
+FROM nginx:alpine
 
-# Copy the self-signed certificate and key files to the container
-COPY template_cert.crt /etc/nginx/ssl/
-COPY template_cert.key /etc/nginx/ssl/
+# Install OpenSSL for debugging
+RUN apk add --no-cache openssl
 
-# Replace the default Nginx configuration file with our own
+# Create SSL directory
+RUN mkdir -p /etc/nginx/ssl
+
+# Copy certificate chain and key
+COPY alpha_chain_cert.crt /etc/nginx/ssl/server.crt
+COPY alpha_cert.key /etc/nginx/ssl/server.key
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 443 for HTTPS traffic
+# Expose HTTPS port
 EXPOSE 443
 
+CMD ["nginx", "-g", "daemon off;"]
