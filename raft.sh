@@ -1,34 +1,14 @@
 #!/bin/bash
 
-# edit the domain to reflect the domain you choose to generate certificates
-# This is only used for the cleanup function, should you need a quick way
-# to remove all issued certificates stored in folders
-DOMAIN="middleearth.test"
+# amend env.sh if necessary
 
-ROOT_DIR="./root_certs"
-INTERMEDIATE_DIR="./intermediate_certs"
 CONFIG_FILE=vault_config.hcl
 VAULT_LOG=vault.log
 STORAGE_FOLDER="./data"
-ADDRESS="http://127.0.0.1:8200"
-NO_TLS="-tls-skip-verify"
-#VAULT_ADDR="http://127.0.0.1:8200"
-
-# Define colors from env.sh
-# BLACK='\033[0;30m'
-# RED='\033[0;31m'
-# GREEN='\033[0;32m'
-# YELLOW='\033[0;33m'
-# MAGENTA='\033[0;35m'
-# CYAN='\033[0;36m'
-# WHITE='\033[0;37m'
-# NC='\033[0m' # No Color
 
 function stop_vault {
 
   echo -e "${CYAN}Checking for vault process running.${NC}"
-  #VAULT_ID=$(pgrep -u "$USER" vault)
-  #if [[ $? -eq 0 ]]; then
   if VAULT_ID=$(pgrep -u "$USER" vault); then
     echo -e "${RED}[ Stopping vault process ]${NC}"
     echo
@@ -116,7 +96,7 @@ function start_vault {
     "$VAULT_TOKEN" \
     "" \
     "Use ctrl-v to paste" \
-    "Use(paste) token at ${ADDRESS} via web browser, to login to vault GUI" \
+    "Use(paste) token at ${VAULT_ADDR} via web browser, to login to vault GUI" \
     "" \
     ""
 }
@@ -191,7 +171,7 @@ function restore_snapshot {
     "$VAULT_TOKEN" \
     "" \
     "Use ctrl-v to paste" \
-    "Paste the token at ${ADDRESS} via web browser, to login to the Vault GUI" \
+    "Paste the token at ${VAULT_ADDR} via web browser, to login to the Vault GUI" \
     ""
   source ./env.sh
 }

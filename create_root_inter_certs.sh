@@ -4,23 +4,6 @@
 # Source environment variables
 source ./env.sh
 
-# Variables
-#DOMAIN="$DOMAIN_STRING"
-#ISSUER_NAME_CN="$ISSUER_NAME_CN_STRING"
-# CN_ROOT="${ISSUER_NAME_CN} Root Certificate Authority"
-# CN_INTER="${ISSUER_NAME_CN} Intermediate Certificate Authority"
-# CN_ROOT_NO_SPACE="${CN_ROOT// /_}"
-# CN_INTER_NO_SPACE="${CN_INTER// /_}"
-
-# ROOT_DIR="./root_certs"
-# INTERMEDIATE_DIR="./intermediate_certs"
-# VAULT_ROLE="$VAULT_ROLE_STRING"
-#ADDRESS="$VAULT_ADDR"
-# export VAULT_ADDR="http://127.0.0.1:8200"
-# NO_TLS="$NO_TLS_STRING"
-# KEY_TYPE="$KEY_TYPE_STRING"
-# KEY_BITS="$KEY_BITS_STRING"
-
 mkdir "$ROOT_DIR"
 mkdir "$INTERMEDIATE_DIR"
 

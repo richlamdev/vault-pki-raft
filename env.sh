@@ -18,8 +18,6 @@ CN_ROOT="${ISSUER_NAME_CN} Root Certificate Authority"
 CN_INTER="${ISSUER_NAME_CN} Intermediate Certificate Authority"
 CN_ROOT_NO_SPACE="${CN_ROOT// /_}"
 CN_INTER_NO_SPACE="${CN_INTER// /_}"
-ROOT_DIR="./root_certs"
-INTERMEDIATE_DIR="./intermediate_certs"
 
 ### common variables
 # VAULT_ROLE_STRING="common_vault_role"
@@ -28,6 +26,8 @@ VAULT_ROLE="common_vault_role"
 NO_TLS="-tls-skip-verify"
 KEY_TYPE="ec"
 KEY_BITS="384"
+ROOT_DIR="./root_certs"
+INTERMEDIATE_DIR="./intermediate_certs"
 
 # Define color codes
 BLACK='\033[0;30m'
