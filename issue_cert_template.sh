@@ -43,12 +43,6 @@ jq -r '.data.private_key' "$OUT_DIR/${OUT_FILE}" >"${OUT_DIR}/${HOST}_cert.key"
 touch "${OUT_DIR}/created_$(date +"%Y-%m-%d--%H-%M-%S")"
 printf "\n${GREEN}%s${NC}\n" "Timestamp file created in ${OUT_DIR}"
 
-# Copy files to Docker directory
-# cp "${OUT_DIR}/${HOST}_cert.crt" ./docker/.
-# cp "${OUT_DIR}/${HOST}_cert.key" ./docker/.
-# printf "\n${YELLOW}%s${NC}\n" "*** Copied ${HOST}_cert.crt to ./docker/${HOST}_cert.crt ***"
-# printf "${YELLOW}%s${NC}\n" "*** Copied ${HOST}_cert.key to ./docker/${HOST}_cert.key ***"
-
 # Provide usage instructions
 printf "\n${CYAN}%s${NC}\n" "*** To view ${HOST}_cert.key private certificate execute this command: ***"
 printf "${MAGENTA}%s${NC}\n" "openssl pkey -in ${OUT_DIR}/${HOST}_cert.key -check"
@@ -61,22 +55,16 @@ printf "${MAGENTA}%s${NC}\n" "openssl x509 -in ${OUT_DIR}/${HOST}_cert.crt -text
 
 # Final confirmation
 printf "\n${GREEN}%s${NC}\n" "✅ Certificate and key generated successfully for ${SUBJECT_CN}"
-#printf "${CYAN}%s${NC}\n" "Edit the Dockerfile in ./docker to create the image and execute the container."
 
-# --------------------------------------
-# 🛡️ STEP 1: Concatenate Certificates
-# --------------------------------------
+### Docker setup
+# Concatenate Certificates
 
 mkdir ./docker
 
 CHAIN_CERT="${OUT_DIR}/${HOST}_chain_cert.crt"
-cat "${OUT_DIR}/${HOST}_cert.crt" "${INTERMEDIATE_DIR}/${CN_INTER_NO_SPACE}_signed_by_root.cert.pem" >"${CHAIN_CERT}"
+cp "${OUT_DIR}/${HOST}_cert.crt" "${CHAIN_CERT}"
 
 printf "\n${GREEN}%s${NC}\n" "✅ Concatenated leaf and intermediate certificates into: ${CHAIN_CERT}"
-
-# --------------------------------------
-# 📁 STEP 2: Copy Certificates to Docker Directory
-# --------------------------------------
 
 # Copy concatenated chain cert and key to Docker directory
 cp "${CHAIN_CERT}" ./docker/
@@ -85,9 +73,7 @@ cp "${OUT_DIR}/${HOST}_cert.key" ./docker/
 printf "\n${YELLOW}%s${NC}\n" "*** Copied concatenated certificate to ./docker/${HOST}_chain_cert.crt ***"
 printf "${YELLOW}%s${NC}\n" "*** Copied private key to ./docker/${HOST}_cert.key ***"
 
-# --------------------------------------
-# 🐳 STEP 3: Generate Dockerfile
-# --------------------------------------
+# Generate Dockerfile
 
 cat <<EOF >./docker/Dockerfile
 # Dockerfile for serving certificates via Nginx
@@ -112,9 +98,7 @@ EOF
 
 printf "\n${GREEN}%s${NC}\n" "✅ Dockerfile generated at ./docker/Dockerfile"
 
-# --------------------------------------
-# ⚙️ STEP 4: Generate nginx.conf
-# --------------------------------------
+# Generate nginx.conf
 
 cat <<EOF >./docker/nginx.conf
 # nginx.conf for TLS termination with certificate chain
@@ -145,9 +129,7 @@ EOF
 
 printf "\n${GREEN}%s${NC}\n" "✅ nginx.conf generated at ./docker/nginx.conf"
 
-# --------------------------------------
-# 🛠️ STEP 5: Build and Run Docker Container
-# --------------------------------------
+# Build and Run Docker Container
 
 # Navigate to docker directory
 cd ./docker || exit
@@ -161,9 +143,7 @@ docker run -d --name nginx-tls-cert -p 443:443 nginx-tls-cert
 printf "\n${GREEN}%s${NC}\n" "✅ Docker container is running with HTTPS enabled."
 printf "${CYAN}%s${NC}\n" "🌐 Access the server via: https://localhost"
 
-# --------------------------------------
-# 🔍 STEP 6: Verify SSL Chain (Optional)
-# --------------------------------------
+# Verify SSL Chain (Optional)
 
 printf "\n${CYAN}%s${NC}\n" "*** Verify SSL certificate with OpenSSL command: ***"
 printf "${MAGENTA}%s${NC}\n" "openssl s_client -connect localhost:443 -showcerts"
