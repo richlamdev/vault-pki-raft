@@ -29,7 +29,7 @@ echo
 printf "${MAGENTA}%s${NC}\n" "vault write \"${NO_TLS}\" -field=certificate pki/root/generate/internal ..."
 vault write "${NO_TLS}" -field=certificate pki/root/generate/internal \
   common_name="${CN_ROOT}" key_type="${KEY_TYPE}" ttl=87600h ou="my dept" |
-  tee "$ROOT_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
+tee "$ROOT_DIR/$CN_ROOT_NO_SPACE.root_cert.crt"
 echo
 
 # Configure CA and CRL URLs
