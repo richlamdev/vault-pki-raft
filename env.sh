@@ -1,13 +1,16 @@
+#!/bin/bash
+# shellcheck disable=SC2034
+
 ### issue_cert_template.sh variables
 HOST_STRING="${1:-$HOST_STRING}"
-SLD_STRING="middleearth"
-TLD_STRING="test"
+SLD_STRING="theshire"
+TLD_STRING="home"
 DOMAIN_STRING="${SLD_STRING}.${TLD_STRING}"
 SUBJECT_CN="${HOST_STRING}.${DOMAIN_STRING}"
 ISSUER_NAME_CN_STRING="Lord of the Rings"
-IP_SAN1="127.0.0.1"
+IP_SAN1="192.168.1.1"
 ALT_NAME1="${SUBJECT_CN}"
-IP_SAN2_STRING="192.168.70.33"
+#IP_SAN2_STRING="192.168.70.33"
 #ALT_NAME2_STRING=""
 TTL="9528h"
 

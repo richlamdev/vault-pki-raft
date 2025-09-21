@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# shellcheck shell=bash
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -12,39 +12,35 @@ IMAGE_NAME="nginx-tls-cert"
 
 # 🛑 Step 1: Stop and Remove the Docker Container
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-    printf "${YELLOW}Stopping container: ${CONTAINER_NAME}...${NC}\n"
-    docker stop "${CONTAINER_NAME}"
+  printf "%bStopping container: %s...%b\n" "$YELLOW" "$CONTAINER_NAME" "$NC"
+  docker stop "${CONTAINER_NAME}"
 
-    printf "${YELLOW}Removing container: ${CONTAINER_NAME}...${NC}\n"
-    docker rm "${CONTAINER_NAME}"
+  printf "%bRemoving container: %s...%b\n" "$YELLOW" "$CONTAINER_NAME" "$NC"
+  docker rm "${CONTAINER_NAME}"
 
-    printf "${GREEN}✅ Container removed successfully.${NC}\n"
+  printf "%b✅ Container removed successfully.%b\n" "$GREEN" "$NC"
 else
-    printf "${RED}⚠️  Container ${CONTAINER_NAME} not found.${NC}\n"
+  printf "%b⚠️  Container %s not found.%b\n" "$RED" "$CONTAINER_NAME" "$NC"
 fi
 
 # 🗑️ Step 2: Remove the Docker Image
 if docker images --format '{{.Repository}}' | grep -q "^${IMAGE_NAME}$"; then
-    printf "${YELLOW}Removing image: ${IMAGE_NAME}...${NC}\n"
-    docker rmi "${IMAGE_NAME}"
+  printf "%bRemoving image: %s...%b\n" "$YELLOW" "$IMAGE_NAME" "$NC"
+  docker rmi "${IMAGE_NAME}"
 
-    printf "${GREEN}✅ Image removed successfully.${NC}\n"
+  printf "%b✅ Image removed successfully.%b\n" "$GREEN" "$NC"
 else
-    printf "${RED}⚠️  Image ${IMAGE_NAME} not found.${NC}\n"
+  printf "%b⚠️  Image %s not found.%b\n" "$RED" "$IMAGE_NAME" "$NC"
 fi
 
 # 🚮 Step 3: Clean Up Dangling Images (Optional)
 if [ "$(docker images -f 'dangling=true' -q)" ]; then
-    printf "${YELLOW}Cleaning up dangling Docker images...${NC}\n"
-    docker image prune -f
-    printf "${GREEN}✅ Dangling images cleaned up.${NC}\n"
+  printf "%bCleaning up dangling Docker images...%b\n" "$YELLOW" "$NC"
+  docker image prune -f
+  printf "%b✅ Dangling images cleaned up.%b\n" "$GREEN" "$NC"
 fi
 
-
-# delete ./docker directory
-
+# Delete ./docker directory
 rm -rf ./docker
-
-# 🎯 Final Message
-printf "${GREEN}✅ Cleanup complete. Docker environment is clean.${NC}\n"
-printf "${GREEN}✅ ./docker deleted. ${NC}\n"
+printf "%b✅ Cleanup complete. Docker environment is clean.%b\n" "$GREEN" "$NC"
+printf "%b✅ ./docker deleted.%b\n" "$GREEN" "$NC"

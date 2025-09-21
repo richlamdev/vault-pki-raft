@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # Ensure the script is executed with a HOST_STRING argument
 if [ -z "$1" ]; then
